@@ -1,0 +1,237 @@
+{
+    "sections": [
+        {
+            "content": [
+                {
+                    "organization": "Google",
+                    "date": "2021 - Present",
+                    "description": "Lead a team of 8 data scientists developing ML models for search ranking algorithms. Implemented transformer-based models that improved search relevance by 12%. Architected MLOps pipelines serving 1B+ daily queries with 99.9% uptime.",
+                    "icon": "icons/google-icon.svg",
+                    "link": "https://www.google.com",
+                    "title": "Senior Data Scientist"
+                },
+                {
+                    "organization": "Amazon",
+                    "date": "2019 - 2021",
+                    "description": "Built recommendation systems for Amazon Prime Video,Built recommendation systems for Amazon Prime VideoBuilt recommendation systems for Amazon Prime Video increasing user engagement by 25%. Developed real-time personalization algorithms processing 50M+ events daily. Led A/B testing framework reducing experiment cycle time by 40%.",
+                    "icon": "icons/amazon-icon.svg",
+                    "link": "https://www.amazon.com",
+                    "title": "Data Scientist"
+                },
+                {
+                    "organization": "IBM",
+                    "date": "2016 - 2018",
+                    "description": "Developed predictive models for supply chain optimization, reducing operational costs by 10% through data-driven insights.",
+                    "icon": "icons/ibm-icon.svg",
+                    "link": "https://www.ibm.com",
+                    "title": "Junior Data Scientist"
+                }
+            ],
+            "title": "Experience",
+            "type": "cards_with_link",
+            "truncation_limit": 150
+        },
+        {
+            "path": "src/content/projects/",
+            "title": "Projects",
+            "type": "cards_outside",
+            "truncation_limit": 150
+        },
+        {
+            "content": [
+                {
+                    "icon": "icons/programming-icon.svg",
+                    "name": "Programming Languages",
+                    "skills": [
+                        "Python",
+                        "R",
+                        "SQL",
+                        "JavaScript",
+                        "Scala",
+                        "Java"
+                    ]
+                },
+                {
+                    "icon": "icons/ml-icon.svg",
+                    "name": "Machine Learning",
+                    "skills": [
+                        "Supervised Learning",
+                        "Deep Learning",
+                        "Unsupervised Learning",
+                        "NLP",
+                        "Computer Vision"
+                    ]
+                },
+                {
+                    "icon": "icons/tools-icon.svg",
+                    "name": "Data Science Tools",
+                    "skills": [
+                        "TensorFlow",
+                        "PyTorch", 
+                        "Scikit-Learn",
+                        "Pandas",
+                        "NumPy",
+                        "Jupyter"
+                    ]
+                },
+                {
+                    "icon": "icons/cloud-icon.svg",
+                    "name": "Cloud & MLOps",
+                    "skills": [
+                        "AWS",
+                        "Google Cloud",
+                        "Docker",
+                        "Kubernetes",
+                        "MLflow",
+                        "Airflow"
+                    ]
+                },
+                {
+                    "icon": "icons/database-icon.svg",
+                    "name": "Databases & Big Data",
+                    "skills": [
+                        "PostgreSQL",
+                        "MongoDB",
+                        "Redis",
+                        "Spark",
+                        "Kafka",
+                        "Elasticsearch"
+                    ]
+                },
+                {
+                    "icon": "icons/chart-icon.svg",
+                    "name": "Visualization",
+                    "skills": [
+                        "Tableau",
+                        "Power BI",
+                        "Matplotlib",
+                        "Plotly",
+                        "D3.js",
+                        "Seaborn"
+                    ]
+                }
+            ],
+            "title": "Skills",
+            "type": "cards_with_icons"
+        },
+        {
+            "content": [
+                {
+                    "date": "june 2019",
+                    "icon": "",
+                    "link": "https://www.michigan.edu/my-certificates",
+                    "organization": "University of Michigan",
+                    "title": "Devops specialist"
+                },
+                {
+                    "date": "may 2020",
+                    "icon": "",
+                    "link": "https://www.coursera.org/my-certificates",
+                    "organization": "Stanford University (Coursera)",
+                    "title": "Machine Learning Specialization"
+                }
+            ],
+            "title": "Certifications",
+            "type": "cards",
+            "truncation_limit": 150
+        },
+        {
+            "content": [
+                {
+                    "date": "2013 - 2015",
+                    "description": "Thesis: 'Deep Learning Approaches for Large-Scale Natural Language Understanding'. Published 3 papers in top-tier ML conferences. GPA: 3.9/4.0",
+                    "icon": "",
+                    "link": "https://www.stanford.edu",
+                    "organization": "Stanford University",
+                    "title": "MS in Computer Science (AI/ML Focus)"
+                },
+                {
+                    "date": "2009 - 2013",
+                    "description": "Major in Computer Science with Statistics Minor. Magna Cum Laude. Captain of Programming Competition Team. Research in Machine Learning Lab.",
+                    "icon": "",
+                    "link": "https://www.mit.edu",
+                    "organization": "Massachusetts Institute of Technology",
+                    "title": "BS in Computer Science"
+                }
+            ],
+            "title": "Education",
+            "type": "cards_with_link",
+            "truncation_limit": 150
+        },
+        {
+            "path": "src/content/blogs/",
+            "title": "Blogs",
+            "type": "cards_outside",
+            "truncation_limit": 150
+        },
+        {
+            "content": [
+                {
+                    "date": "11/20/2021",
+                    "icon": "", 
+                    "link": "https://arxiv.org/abs/2022.54321",
+                    "publication": "ICML 2022",
+                    "title": "Federated Learning for Healthcare: Privacy-Preserving Medical Diagnosis"
+                },
+                {
+                    "date": "01/06/2022",
+                    "icon": "",
+                    "link": "https://example.com/neural-networks-nlp",
+                    "publication": "Journal of Machine Learning Research",
+                    "title": "Optimizing Neural Networks for Natural Language Processing: A Case Study"
+                },
+                {
+                    "date": "05/01/2021",
+                    "icon": "",
+                    "link": "https://example.com/healthcare-predictive-modeling",
+                    "publication": "Data Science Quarterly",
+                    "title": "Predictive Modeling for Healthcare Outcomes Using Ensemble Methods"
+                }
+            ],
+            "title": "Publications",
+            "type": "cards",
+            "truncation_limit": 150
+        }
+    ],
+    "settings": {
+        "basePath": "/portfolio",
+        "bio": "Passionate data scientist with 8+ years of experience transforming complex data into actionable insights. Expertise in machine learning, deep learning, and MLOps, with a proven track record of deploying ML models at scale. Led cross-functional teams to deliver data-driven solutions that drive business growth and improve user experiences.",
+        "expertises": [
+            "Machine Learning",
+            "Deep Learning",
+            "MLOps",
+            "Python",
+            "NLP",
+            "Computer Vision",
+            "Big Data",
+            "Cloud Computing"
+        ],
+        "name": "John Doe",
+        "potrait_image": "images/Portrait_Placeholder.png",
+        "theme": "ocean-dark",
+        "title": "Senior Data Scientist & ML Engineer",
+        "cards_before_pagination": 3
+    },
+    "social": [
+            {
+                "icon": "icons/email-icon.svg",
+                "link": "john.doe@email.com",
+                "name": "Email"
+            },
+            {
+                "icon": "icons/github-icon.svg",
+                "link": "https://github.com/username",
+                "name": "Github"
+            },
+            {
+                "icon": "icons/linkedin-icon.svg",
+                "link": "https://linkedin.com/in/username",
+                "name": "linkedin"
+            },
+            {
+                "icon": "icons/cv-icon.svg",
+                "link": "CV.pdf",
+                "name": "Resume"
+            }
+        ]
+}
