@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Projects - Senior Data Scientist Portfolio</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-container": "#8e9cb4",
+                    "vibrant-cyan": "#22D3EE",
+                    "surface-dim": "#0b1326",
+                    "error-container": "#93000a",
+                    "inverse-surface": "#dae2fd",
+                    "on-secondary": "#263143",
+                    "tertiary-fixed": "#d5e3fd",
+                    "secondary-fixed-dim": "#bcc7de",
+                    "secondary": "#bcc7de",
+                    "on-primary": "#00344d",
+                    "primary-fixed-dim": "#89ceff",
+                    "surface": "#0b1326",
+                    "surface-container-high": "#222a3d",
+                    "on-error-container": "#ffdad6",
+                    "on-primary-container": "#003751",
+                    "secondary-container": "#3e495d",
+                    "inverse-on-surface": "#283044",
+                    "on-tertiary-fixed": "#0d1c2f",
+                    "on-surface": "#dae2fd",
+                    "inverse-primary": "#006591",
+                    "primary": "#89ceff",
+                    "background": "#0b1326",
+                    "surface-tint": "#89ceff",
+                    "on-tertiary-container": "#263447",
+                    "on-secondary-fixed-variant": "#3c475a",
+                    "on-tertiary": "#233144",
+                    "surface-container-lowest": "#060e20",
+                    "on-primary-fixed": "#001e2f",
+                    "on-tertiary-fixed-variant": "#3a485c",
+                    "primary-fixed": "#c9e6ff",
+                    "on-background": "#dae2fd",
+                    "data-purple": "#8B5CF6",
+                    "outline-variant": "#3e4850",
+                    "surface-container-highest": "#2d3449",
+                    "outline": "#88929b",
+                    "surface-variant": "#2d3449",
+                    "tertiary-fixed-dim": "#b9c7e0",
+                    "on-error": "#690005",
+                    "data-green": "#10B981",
+                    "slate-border": "#1E293B",
+                    "on-surface-variant": "#bec8d2",
+                    "error": "#ffb4ab",
+                    "on-primary-fixed-variant": "#004c6e",
+                    "secondary-fixed": "#d8e3fb",
+                    "tertiary": "#b9c7e0",
+                    "surface-container": "#171f33",
+                    "primary-container": "#0ea5e9",
+                    "surface-container-low": "#131b2e",
+                    "on-secondary-container": "#aeb9d0",
+                    "deep-navy": "#020617",
+                    "surface-bright": "#31394d",
+                    "on-secondary-fixed": "#111c2d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-desktop": "48px",
+                    "margin-mobile": "16px",
+                    "unit": "4px",
+                    "container-max": "1280px",
+                    "gutter": "24px",
+                    "section-gap": "120px"
+            },
+            "fontFamily": {
+                    "display-lg-mobile": ["Hanken Grotesk"],
+                    "display-lg": ["Hanken Grotesk"],
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Hanken Grotesk"],
+                    "label-mono": ["JetBrains Mono"],
+                    "headline-lg": ["Hanken Grotesk"]
+            },
+            "fontSize": {
+                    "display-lg-mobile": ["40px", {"lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "display-lg": ["64px", {"lineHeight": "72px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                    "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                    "label-mono": ["14px", {"lineHeight": "20px", "letterSpacing": "0.05em", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "40px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        body {
+            background-color: #020617; /* Deep Navy */
+            color: #dae2fd;
+        }
+        .project-card {
+            background-color: #0F172A; /* Surface 1 */
+            border: 1px solid rgba(30, 41, 59, 0.5); /* slate-border/50 */
+            transition: all 0.3s ease;
+        }
+        .project-card:hover {
+            border-color: #22D3EE; /* vibrant-cyan */
+            box-shadow: 0 0 40px rgba(34, 211, 238, 0.1);
+            transform: translateY(-2px);
+        }
+        .tag-chip {
+            background-color: rgba(34, 211, 238, 0.1);
+            border: 1px solid rgba(34, 211, 238, 0.3);
+        }
+    </style>
+</head>
+<body class="font-body-md bg-deep-navy text-on-surface min-h-screen flex flex-col">
+<!-- TopNavBar Component -->
+<nav class="fixed top-0 w-full z-50 border-b border-slate-border/50 bg-background/80 backdrop-blur-md">
+<div class="flex justify-between items-center max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop h-20">
+<div class="font-headline-md text-headline-md font-bold text-vibrant-cyan">
+                DS_EXPERT
+            </div>
+<div class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant hover:text-vibrant-cyan transition-colors duration-300 font-body-md text-body-md" href="#">About</a>
+<a class="text-on-surface-variant hover:text-vibrant-cyan transition-colors duration-300 font-body-md text-body-md" href="#">Experience</a>
+<a class="text-vibrant-cyan border-b-2 border-vibrant-cyan pb-1 font-body-md text-body-md" href="#">Projects</a>
+<a class="text-on-surface-variant hover:text-vibrant-cyan transition-colors duration-300 font-body-md text-body-md" href="#">Skills</a>
+</div>
+<button class="bg-vibrant-cyan text-deep-navy px-6 py-2 rounded-DEFAULT font-label-sm text-label-sm hover:opacity-90 transition-opacity hidden md:block">
+                Contact
+            </button>
+<button class="md:hidden text-vibrant-cyan">
+<span class="material-symbols-outlined text-3xl">menu</span>
+</button>
+</div>
+</nav>
+<!-- Main Content -->
+<main class="flex-grow pt-32 pb-section-gap px-margin-mobile md:px-margin-desktop max-w-container-max mx-auto w-full">
+<!-- Header Section -->
+<header class="mb-16">
+<h1 class="font-display-lg-mobile text-display-lg-mobile md:font-display-lg md:text-display-lg text-on-surface mb-4">
+                Featured <span class="text-vibrant-cyan">Projects</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                A selection of machine learning models, data pipelines, and analytical tools built to solve complex business challenges at scale.
+            </p>
+</header>
+<!-- Projects Grid (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-gutter">
+<!-- Project Card 1 (Large) -->
+<article class="project-card rounded-xl p-8 flex flex-col h-full lg:col-span-2">
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-6">
+<span class="material-symbols-outlined text-4xl text-vibrant-cyan">model_training</span>
+<div class="flex gap-2">
+<a class="text-on-surface-variant hover:text-vibrant-cyan transition-colors" href="#">
+<span class="material-symbols-outlined">code</span>
+</a>
+<a class="text-on-surface-variant hover:text-vibrant-cyan transition-colors" href="#">
+<span class="material-symbols-outlined">open_in_new</span>
+</a>
+</div>
+</div>
+<h3 class="font-headline-lg text-headline-lg text-on-surface mb-3">Predictive Maintenance Engine</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+                        Developed an end-to-end machine learning pipeline utilizing IoT sensor data to predict equipment failure 48 hours in advance. Reduced unplanned downtime by 35% across manufacturing facilities. Implemented using PyTorch and deployed via Kubernetes.
+                    </p>
+</div>
+<div class="mt-auto">
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="tag-chip px-3 py-1 rounded-DEFAULT font-label-mono text-label-mono text-vibrant-cyan">PyTorch</span>
+<span class="tag-chip px-3 py-1 rounded-DEFAULT font-label-mono text-label-mono text-vibrant-cyan">Kubernetes</span>
+<span class="tag-chip px-3 py-1 rounded-DEFAULT font-label-mono text-label-mono text-vibrant-cyan">Time Series</span>
+<span class="tag-chip px-3 py-1 rounded-DEFAULT font-label-mono text-label-mono text-vibrant-cyan">MLOps</span>
+</div>
+<div class="flex gap-4">
+<button class="bg-vibrant-cyan text-deep-navy px-6 py-2 rounded-DEFAULT font-label-sm text-label-sm hover:opacity-90 transition-opacity">
+                            Read Case Study
+                        </button>
+</div>
+</div>
+</article>
+<!-- Project Card 2 -->
+<article class="project-card rounded-xl p-8 flex flex-col h-full">
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-6">
+<span class="material-symbols-outlined text-4xl text-data-purple">language</span>
+<div class="flex gap-2">
+<a class="text-on-surface-variant hover:text-data-purple transition-colors" href="#">
+<span class="material-symbols-outlined">code</span>
+</a>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-3">NLP Semantic Search</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+                        Transformer-based search engine for enterprise document retrieval, improving contextual relevance by 60% over legacy TF-IDF systems.
+                    </p>
+</div>
+<div class="mt-auto">
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="border border-data-purple/30 bg-data-purple/10 px-3 py-1 rounded-DEFAULT font-label-mono text-label-mono text-data-purple">HuggingFace</span>
+<span class="border border-data-purple/30 bg-data-purple/10 px-3 py-1 rounded-DEFAULT font-label-mono text-label-mono text-data-purple">FastAPI</span>
+</div>
+<a class="inline-flex items-center text-on-surface hover:text-data-purple font-label-sm text-label-sm transition-colors group" href="#">
+                        View Repository <span class="material-symbols-outlined ml-1 text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Project Card 3 -->
+<article class="project-card rounded-xl p-8 flex flex-col h-full">
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-6">
+<span class="material-symbols-outlined text-4xl text-data-green">visibility</span>
+<div class="flex gap-2">
+<a class="text-on-surface-variant hover:text-data-green transition-colors" href="#">
+<span class="material-symbols-outlined">code</span>
+</a>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-3">Computer Vision QC</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+                        Automated defect detection system using YOLOv8, processing high-resolution images in real-time on edge devices.
+                    </p>
+</div>
+<div class="mt-auto">
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="border border-data-green/30 bg-data-green/10 px-3 py-1 rounded-DEFAULT font-label-mono text-label-mono text-data-green">OpenCV</span>
+<span class="border border-data-green/30 bg-data-green/10 px-3 py-1 rounded-DEFAULT font-label-mono text-label-mono text-data-green">YOLO</span>
+</div>
+<a class="inline-flex items-center text-on-surface hover:text-data-green font-label-sm text-label-sm transition-colors group" href="#">
+                        View Repository <span class="material-symbols-outlined ml-1 text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</article>
+<!-- Project Card 4 (Medium) -->
+<article class="project-card rounded-xl p-8 flex flex-col h-full lg:col-span-2">
+<div class="flex-grow">
+<div class="flex justify-between items-start mb-6">
+<span class="material-symbols-outlined text-4xl text-vibrant-cyan">analytics</span>
+<div class="flex gap-2">
+<a class="text-on-surface-variant hover:text-vibrant-cyan transition-colors" href="#">
+<span class="material-symbols-outlined">open_in_new</span>
+</a>
+</div>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-3">Customer Churn Prediction Model</h3>
+<p class="font-body-md text-body-md text-on-surface-variant mb-6">
+                        Built an XGBoost model to identify at-risk customers with 89% precision. Integrated with Snowflake and Tableau for daily executive dashboards, directly resulting in a 12% reduction in monthly churn rate through targeted retention campaigns.
+                    </p>
+</div>
+<div class="mt-auto">
+<div class="flex flex-wrap gap-2 mb-6">
+<span class="tag-chip px-3 py-1 rounded-DEFAULT font-label-mono text-label-mono text-vibrant-cyan">XGBoost</span>
+<span class="tag-chip px-3 py-1 rounded-DEFAULT font-label-mono text-label-mono text-vibrant-cyan">Snowflake</span>
+<span class="tag-chip px-3 py-1 rounded-DEFAULT font-label-mono text-label-mono text-vibrant-cyan">dbt</span>
+</div>
+<a class="inline-flex items-center text-on-surface hover:text-vibrant-cyan font-label-sm text-label-sm transition-colors group" href="#">
+                        View Interactive Dashboard <span class="material-symbols-outlined ml-1 text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</article>
+</div>
+</main>
+<!-- Footer Component -->
+<footer class="w-full py-12 border-t border-slate-border/50 bg-surface-dim mt-auto">
+<div class="flex flex-col md:flex-row justify-between items-center max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop gap-gutter">
+<div class="font-headline-md text-headline-md text-on-surface">
+                DS_EXPERT
+            </div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-vibrant-cyan transition-all duration-200 font-label-sm text-label-sm hover:-translate-y-0.5" href="#">LinkedIn</a>
+<a class="text-on-surface-variant hover:text-vibrant-cyan transition-all duration-200 font-label-sm text-label-sm hover:-translate-y-0.5" href="#">GitHub</a>
+<a class="text-on-surface-variant hover:text-vibrant-cyan transition-all duration-200 font-label-sm text-label-sm hover:-translate-y-0.5" href="#">ResearchGate</a>
+<a class="text-on-surface-variant hover:text-vibrant-cyan transition-all duration-200 font-label-sm text-label-sm hover:-translate-y-0.5" href="#">Twitter</a>
+</div>
+<div class="font-label-sm text-label-sm text-on-surface-variant">
+                © 2024 Senior Data Scientist. All rights reserved.
+            </div>
+</div>
+</footer>
+</body></html>
