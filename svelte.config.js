@@ -1,16 +1,12 @@
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
-import fs from 'fs';
-import path from 'path';
+import { loadPortfolioData } from './src/lib/server/portfolioData.js';
 
-const dataFilePath = path.join(process.cwd(), 'src', 'content', 'data', 'portfolio-data.json');
-
-// Add error handling for file reading
 let portfolioData;
 try {
-    portfolioData = JSON.parse(fs.readFileSync(dataFilePath, 'utf-8'));
+    portfolioData = loadPortfolioData();
 } catch (error) {
-    console.error('Error reading portfolio-data.json:', error);
+    console.error('Error reading portfolio-data.yaml:', error);
     portfolioData = { settings: { basePath: '' } };
 }
 /** @type {import('@sveltejs/kit').Config} */

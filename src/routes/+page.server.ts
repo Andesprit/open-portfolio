@@ -1,17 +1,16 @@
 import { error } from '@sveltejs/kit';
-import { join } from 'path';
-import { readFileSync } from 'fs';
 import type { PageServerLoad } from './$types';
 import type { PageData, PortfolioSection } from '$lib/types/types';
 import { processContentSections } from '$lib/utils/contentUtils';
+import { loadPortfolioData } from '$lib/server/portfolioData.js';
 
-const portfolioData = JSON.parse(readFileSync(join(process.cwd(), 'src', 'content', 'data', 'portfolio-data.json'), 'utf-8'));
+const portfolioData = loadPortfolioData();
 
 export const prerender = true;
 
 export const load: PageServerLoad = async () => {
     try {
-        // Get all sections with paths from portfolio-data.json
+        // Get all sections with configured content paths
         const markdownSections = (portfolioData.sections as PortfolioSection[]).filter((section): section is PortfolioSection & { path: string } => Boolean(section.path));
 
         // Load content for each section

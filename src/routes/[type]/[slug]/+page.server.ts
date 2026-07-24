@@ -8,9 +8,10 @@ import { generateRoutes, findSectionByType } from '$lib/utils/routeUtils';
 import { createMarkedWithHighlight } from '$lib/utils/markdownHighlightUtils';
 import { loadNavigationItems, findNextItem } from '$lib/utils/navigationUtils';
 import { processImagePath } from '$lib/utils/imageUtils';
+import { loadPortfolioData } from '$lib/server/portfolioData.js';
 
 // Read portfolio data for route generation
-const portfolioData = JSON.parse(readFileSync(join(process.cwd(), 'src', 'content', 'data', 'portfolio-data.json'), 'utf-8')) as {
+const portfolioData = loadPortfolioData() as {
     sections: PortfolioSection[];
 };
 

@@ -1,23 +1,23 @@
 ---
 title: Open Portfolio - Fully Customizable Portfolio Template
 date: 2024/12/01
-link: https://github.com/yourusername/open-portfolio
+link: https://github.com/Andesprit/open-portfolio
 tags: SvelteKit, TypeScript, CSS3, Markdown, GitHub Pages, Portfolio
-description: A modern, fully customizable portfolio template with 4 card types, 8 themes, and complete JSON-based configuration
-image: 
-skip: False 
+description: A customizable portfolio template with 4 card types, 8 themes, and a readable YAML configuration
+image:
+skip: False
 display_order: 1
 ---
 
 ## Project Overview
 
-**Open Portfolio** is a comprehensive, production-ready portfolio template that revolutionizes how developers showcase their work. Built from the ground up with SvelteKit and TypeScript, this template offers unprecedented customization through a single JSON configuration file, making it accessible to developers of all skill levels.
+**Open Portfolio** is a customizable portfolio template for developers who want to publish their work without rebuilding the same site from scratch. Built with SvelteKit and TypeScript, it keeps the portfolio’s content and structure in one readable YAML file.
 
 What sets this project apart is its **complete modularity** - everything from personal information to themes, from project showcases to blog posts, can be controlled through simple configuration files. No need to dive into code unless you want to extend functionality.
 
 **Key Value Propositions:**
 
-- 🎯 **Zero-code customization** through JSON configuration
+- 🎯 **Zero-code customization** through YAML configuration
 - 🎨 **8 built-in themes** with light/dark variants
 - 📱 **4 distinct card types** for different content presentation
 - ⚡ **Blazing fast performance** with SvelteKit
@@ -39,8 +39,8 @@ What sets this project apart is its **complete modularity** - everything from pe
 The portfolio follows a **data-driven architecture** where all content flows from configuration files:
 
 ```
-📁 Content Layer (JSON + Markdown)
-├── portfolio-data.json (main configuration)
+📁 Content Layer (YAML + Markdown)
+├── portfolio-data.yaml (main configuration)
 ├── projects/*.md (project entries)
 └── blogs/*.md (blog posts)
     ↓
@@ -95,37 +95,28 @@ Dynamic content loading for projects and blogs:
 - Truncated previews with "read more" functionality
 - Automatic sorting by date and display_order
 
-## Revolutionary JSON Configuration System
+## YAML Configuration
 
-The entire portfolio is controlled through `portfolio-data.json`:
+The entire portfolio is controlled through `portfolio-data.yaml`:
 
-```json
-{
-  "sections": [
-    {
-      "title": "Experience",
-      "type": "cards_with_link",
-      "content": [...],
-      "truncation_limit": 150
-    },
-    {
-      "title": "Projects",
-      "type": "cards_outside",
-      "path": "src/content/projects/"
-    },
-    {
-      "title": "Skills",
-      "type": "cards_with_icons",
-      "content": [...]
-    }
-  ],
-  "settings": {
-    "theme": "ocean-dark",
-    "name": "Your Name",
-    "bio": "Your bio...",
-    "cards_before_pagination": 3
-  }
-}
+```yaml
+sections:
+  - title: Experience
+    type: cards_with_link
+    content: []
+    truncation_limit: 150
+  - title: Projects
+    type: cards_outside
+    path: src/content/projects/
+  - title: Skills
+    type: cards_with_icons
+    content: []
+
+settings:
+  theme: ocean-dark
+  name: Your Name
+  bio: Your bio...
+  cards_before_pagination: 3
 ```
 
 ## Advanced Theming System
@@ -217,7 +208,7 @@ Started with a component-based approach, identifying reusable patterns across di
 
 ### 2. **Configuration-First Development**
 
-Designed the JSON schema before building components, ensuring all functionality could be controlled externally without code modifications.
+Designed the YAML structure before building components, ensuring the portfolio could be updated without component changes.
 
 ### 3. **Theme System Implementation**
 
