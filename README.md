@@ -1,5 +1,7 @@
 # Open Portfolio
 
+**[View the live portfolio →](https://andesprit.com/open-portfolio/)**
+
 Build a polished portfolio from one readable YAML file. Open Portfolio is a
 SvelteKit template for developers and technical professionals who want a fast,
 customizable portfolio without rebuilding the same site from scratch.
