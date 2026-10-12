@@ -94,6 +94,7 @@
 		<p>
 			&copy; 2025 <a href="https://github.com/open-portfolio/open-portfolio" target="_blank">Open Portfolio</a> Licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>
 		</p>
+		<p><a class="andesprit-footer-link" href="https://andesprit.com" lang="en">copyright andesprit</a></p>
 	</div>
 </footer>
 
@@ -314,5 +315,21 @@
 			width: 20px;
 			height: 20px;
 		}
+	}
+
+	.footer-bottom .andesprit-footer-link {
+		display: inline-flex;
+		align-items: center;
+		min-height: 44px;
+		margin-block: 6px;
+		color: inherit;
+		font-size: 14px;
+		text-transform: none;
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.footer-bottom .andesprit-footer-link:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 4px;
 	}
 </style>
