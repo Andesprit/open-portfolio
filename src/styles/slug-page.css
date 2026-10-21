@@ -255,3 +255,42 @@ time {
 .content :is(h1, h2, h3, h4, h5, h6):target .heading-anchor {
     opacity: 1;
 }
+
+/* Copy code bar above each code block; added by the codeCopy action, so it never shows without JS. */
+.content .code-copy {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+    margin: 1rem 0 0.25rem;
+}
+
+.content .code-copy-button {
+    min-height: 44px;
+    padding: 0 1rem;
+    border: var(--card-border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--secondary-color);
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.content .code-copy-button:hover {
+    border-color: var(--primary-color);
+}
+
+.content .code-copy-button:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.content .code-copy-status {
+    font-size: 0.9rem;
+}
+
+.content .code-copy + pre {
+    margin-top: 0;
+}

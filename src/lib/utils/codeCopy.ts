@@ -11,11 +11,14 @@ export function codeCopy(node: HTMLElement, _html?: string) {
 			bar.className = 'code-copy';
 			const button = document.createElement('button');
 			button.type = 'button';
+			button.className = 'code-copy-button';
 			button.textContent = 'Copy code';
 			const status = document.createElement('span');
+			status.className = 'code-copy-status';
 			status.setAttribute('role', 'status');
 			button.addEventListener('click', async () => {
-				status.textContent = '';
+				// Clear every block's status so only the latest action reports a result.
+				node.querySelectorAll('.code-copy-status').forEach((other) => (other.textContent = ''));
 				status.textContent = (await copyText(code.textContent ?? ''))
 					? 'Copied'
 					: 'Copy failed. Select the code below and copy it by hand.';
