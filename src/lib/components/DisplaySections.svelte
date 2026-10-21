@@ -25,7 +25,7 @@
 	}
 </script>
 
-{#each portfolioData.sections as section}
+{#each portfolioData.sections.filter((section) => typeof section.title === 'string' && section.title.trim()) as section}
 	{#if section.type === 'cards_with_link'}
 		<CardsWithLink
 			sectionTitle={section.title}

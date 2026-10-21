@@ -4,6 +4,8 @@
 	import type { PortfolioData } from '../types/types';
 	import ThemeSwitcher from './common/ThemeSwitcher.svelte';
 	export let portfolioData: PortfolioData;
+	$: ownerName = typeof portfolioData.settings.name === 'string' && portfolioData.settings.name.trim()
+		? portfolioData.settings.name : 'Portfolio';
 
 	let isOpen: boolean = false;
 	let navElement: HTMLElement | undefined;
@@ -50,7 +52,7 @@
 	// Generate dynamic navigation links
 	$: navLinks = [
 		{ title: 'About', href: `${base}/#about` },
-		...portfolioData.sections.map((section) => ({
+		...portfolioData.sections.filter((section) => typeof section.title === 'string' && section.title.trim()).map((section) => ({
 			title: section.title,
 			href: `${base}/#${titleToAnchor(section.title)}`
 		})),
@@ -81,9 +83,9 @@
 		<div class="nav-left">
 			<a href="{base}/" class="home-link" on:click={closeMenu}>
 				<div class="logo">
-					<span class="initial">{portfolioData.settings.name[0].toUpperCase()}</span>
+					<span class="initial">{ownerName[0].toUpperCase()}</span>
 				</div>
-				<h1 class="name">{portfolioData.settings.name.toUpperCase()}</h1>
+				<h1 class="name">{ownerName.toUpperCase()}</h1>
 			</a>
 		</div>
 

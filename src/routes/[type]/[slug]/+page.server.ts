@@ -1,4 +1,4 @@
-import { error } from '@sveltejs/kit';
+import { error, isHttpError } from '@sveltejs/kit';
 import matter from 'gray-matter';
 import { join } from 'path';
 import { readFileSync } from 'fs';
@@ -93,7 +93,11 @@ export const load: PageServerLoad = async ({ params }) => {
         } satisfies ContentItem;
 
     } catch (e) {
-        console.error(`Error loading content for type "${params.type}" and slug "${params.slug}":`, e);
+        const missingFile = e && typeof e === 'object' && 'code' in e && e.code === 'ENOENT';
+        // Expected missing routes/assets are reported by prerender, without a second stack trace.
+        if (!isHttpError(e, 404) && !missingFile) {
+            console.error(`Error loading content for type "${params.type}" and slug "${params.slug}":`, e);
+        }
         throw error(404, `Content "${params.slug}" not found in ${params.type}. Details: `);
     }
 };

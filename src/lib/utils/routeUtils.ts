@@ -13,6 +13,7 @@ export function generateRoutes(portfolioData: { sections: PortfolioSection[] }):
     // Get sections with valid paths
     const sectionsWithPaths = portfolioData.sections.filter(
         (section): section is PortfolioSection & { path: string } => 
+            typeof section.title === 'string' && section.title.trim() !== '' &&
             typeof section.path === 'string' && 
             section.path.trim() !== ''
     );
@@ -25,7 +26,7 @@ export function generateRoutes(portfolioData: { sections: PortfolioSection[] }):
             
             // Verify directory exists
             if (!existsSync(fullPath)) {
-                console.warn(`Warning: Directory not found for ${section.title}: ${fullPath}`);
+                // Reported once, with a JSON location, by the config validator.
                 return;
             }
 
@@ -59,6 +60,7 @@ export function findSectionByType(portfolioData: { sections: PortfolioSection[] 
     return portfolioData.sections.find(
         (s): s is PortfolioSection & { path: string } => 
             typeof s.path === 'string' && 
+            typeof s.title === 'string' &&
             s.title.toLowerCase().replace(/\s+/g, '-') === type
     );
 } 

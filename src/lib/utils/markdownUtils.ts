@@ -68,6 +68,8 @@ export function loadMarkdownFiles(directory: string): MarkdownContent[] {
         
         return content;
     } catch (e) {
+        // The config validator already names missing folders and their JSON locations.
+        if (e && typeof e === 'object' && 'code' in e && 'syscall' in e && e.syscall === 'scandir' && ['ENOENT', 'ENOTDIR'].includes(String(e.code))) return [];
         console.warn(`Warning: Could not load files from directory ${directory}:`, e);
         return [];
     }

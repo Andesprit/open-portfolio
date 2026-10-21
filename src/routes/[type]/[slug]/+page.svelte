@@ -5,7 +5,7 @@
 
 	export let data: PageData;
 	$: sectionTitle = data.portfolioData.sections.find(
-		(section) => section.title.toLowerCase().replace(/\s+/g, '-') === data.type
+		(section) => typeof section.title === 'string' && section.title.toLowerCase().replace(/\s+/g, '-') === data.type
 	)?.title || data.type;
 </script>
 

@@ -2,19 +2,35 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import fs from 'fs';
 import path from 'path';
-import { validatePortfolio } from './src/lib/utils/validatePortfolio.js';
+import { readPortfolioWarnings } from './src/lib/server/portfolioValidation.js';
 
 function validatePortfolioConfig() {
+    let root = process.cwd();
+    let hadWarnings = false;
+    function report(warnings: string[]) {
+        if (warnings.length) {
+            fs.writeSync(2, `\nportfolio-data.json: ${warnings.length} configuration warning(s) (build continues):\n${warnings.map(warning => `  - ${warning}`).join('\n')}\n\n`);
+        } else if (hadWarnings) {
+            fs.writeSync(2, 'portfolio-data.json: configuration warnings cleared.\n');
+        }
+        hadWarnings = warnings.length > 0;
+    }
     return {
         name: 'validate-portfolio-config',
         configResolved(config: import('vite').ResolvedConfig) {
             // SvelteKit starts a second build for SSR; report only once at startup.
             if (config.build.ssr) return;
-            const data = JSON.parse(fs.readFileSync(path.join(config.root, 'src/content/data/portfolio-data.json'), 'utf8'));
-            const warnings = validatePortfolio(data);
-            if (warnings.length) {
-                fs.writeSync(2, `\nportfolio-data.json: ${warnings.length} configuration warning(s) (build continues):\n${warnings.map(warning => `  - ${warning}`).join('\n')}\n\n`);
-            }
+            root = config.root;
+            report(readPortfolioWarnings(root));
+        },
+        async handleHotUpdate(context: import('vite').HmrContext) {
+            if (context.file !== path.join(root, 'src/content/data/portfolio-data.json')) return;
+            // Vite waits for editors to finish writing before returning the new content.
+            await context.read();
+            report(readPortfolioWarnings(root));
+            for (const module of context.modules) context.server.moduleGraph.invalidateModule(module);
+            context.server.ws.send({ type: 'full-reload' });
+            return [];
         }
     };
 }
@@ -64,7 +80,7 @@ function copyContentImages() {
 }
 
 export default defineConfig({
-    plugins: [validatePortfolioConfig(), copyContentImages(), sveltekit()],
+    plugins: [copyContentImages(), validatePortfolioConfig(), sveltekit()],
     resolve: {
         alias: {
             
