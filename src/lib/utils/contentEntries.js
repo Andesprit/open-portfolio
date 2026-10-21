@@ -67,8 +67,10 @@ export function normalizeMetadata(root, source) {
 		warn('tags', tagForm, scalar ? `the single tag "${String(data.tags)}"` : 'no tags');
 	}
 
-	// YAML turns an unquoted 2024-12-20 into a Date; keep it as the date the owner wrote.
-	const date = data.date instanceof Date && !isNaN(data.date.getTime()) ? data.date.toISOString().slice(0, 10) : text('date');
+	// YAML turns an unquoted 2024-12-20 into a Date; keep that day as written, and keep the
+	// full instant of a timestamp so same-day posts still sort newest first.
+	const iso = data.date instanceof Date && !isNaN(data.date.getTime()) ? data.date.toISOString() : '';
+	const date = iso ? iso.replace(/T00:00:00\.000Z$/, '') : text('date');
 	const link = destination('link', 'https://github.com/you/project');
 
 	let skip = false;

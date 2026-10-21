@@ -7,6 +7,7 @@ import { contentDirectory, normalizeMetadata, readContentFolder } from './conten
 import { generateRoutes } from './routeUtils.ts';
 import { loadNavigationItems, findNextItem } from './navigationUtils.ts';
 import { buildSearchIndex } from './searchIndex.ts';
+import { sortByOrderAndDate } from './dateSortUtils.ts';
 import { readPortfolioWarnings } from '../server/portfolioValidation.js';
 
 const post = (frontmatter) => `---\n${frontmatter}\n---\n\n# Body\n`;
@@ -152,4 +153,21 @@ test('valid formats pass through unchanged and invalid ones use safe fallbacks',
 	assert.match(text.warnings.join('\n'), /skip: "yes" is not supported\. Use true or false\. Using false, so the page is shown/);
 	assert.equal(bad({ title: ['x'] }).metadata.title, 'Untitled');
 	assert.equal(bad('hello').metadata.title, 'Untitled');
+});
+
+test('same-day YAML timestamps keep their time and sort newest first in the list and Next', () => {
+	const root = mkdtempSync(join(tmpdir(), 'portfolio-dates-'));
+	try {
+		mkdirSync(join(root, 'posts'));
+		writeFileSync(join(root, 'posts/a-earlier.md'), post('title: "Earlier"\ndate: 2024-12-20T09:00:00Z'));
+		writeFileSync(join(root, 'posts/b-later.md'), post('title: "Later"\ndate: 2024-12-20T18:00:00Z'));
+		writeFileSync(join(root, 'posts/c-day.md'), post('title: "Day"\ndate: 2024-12-19'));
+		writeFileSync(join(root, 'posts/d-quoted.md'), post('title: "Quoted"\ndate: "12-18-2024"'));
+		const { entries, warnings } = readContentFolder(root, 'posts');
+		assert.deepEqual(warnings, []);
+		assert.deepEqual(entries.map((entry) => entry.metadata.date), ['2024-12-20T09:00:00.000Z', '2024-12-20T18:00:00.000Z', '2024-12-19', '12-18-2024']);
+		const newestFirst = ['b-later', 'a-earlier', 'c-day', 'd-quoted'];
+		assert.deepEqual([...entries].sort(sortByOrderAndDate).map((entry) => entry.slug), newestFirst);
+		assert.deepEqual(loadNavigationItems(join(root, 'posts')).map((item) => item.slug), newestFirst);
+	} finally { rmSync(root, { recursive: true, force: true }); }
 });
