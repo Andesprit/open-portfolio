@@ -39,11 +39,14 @@ test('a healthy project site reports what was checked, its base and the preview 
 	assert.match(out, /did not build, preview or deploy/);
 });
 
-test('a root site previews at /', () => {
-	const { code, out } = run({ data: withSettings({ basePath: '' }) });
-	assert.equal(code, 0);
-	assert.match(out, /\(site root\)/);
-	assert.match(out, /http:\/\/localhost:4173\/ /);
+test('a root site previews at /, whether basePath is "" or omitted', () => {
+	const { basePath, ...settings } = sample.settings;
+	for (const data of [withSettings({ basePath: '' }), JSON.stringify({ ...sample, settings })]) {
+		const { code, out } = run({ data });
+		assert.equal(code, 0);
+		assert.match(out, /\(site root\)/);
+		assert.match(out, /http:\/\/localhost:4173\/ /);
+	}
 });
 
 test('blocking setup problems give one line naming the fix and exit 1', () => {
@@ -51,6 +54,7 @@ test('blocking setup problems give one line naming the fix and exit 1', () => {
 		[{ data: withSettings({ basePath: 'portfolio' }) }, /settings\.basePath is "portfolio".*must start with "\/"/],
 		[{ data: withSettings({ basePath: '/portfolio/' }) }, /must not end with "\/"/],
 		[{ data: withSettings({ basePath: 5 }) }, /settings\.basePath is 5/],
+		[{ data: withSettings({ basePath: null }) }, /settings\.basePath is null\. Use ""/],
 		[{ data: '{\n "settings": {"name": "X",}\n' }, /not valid JSON: .*line 2 column/],
 		[{ data: null }, /portfolio-data\.json is missing/],
 		[{ data: '[]' }, /must contain one JSON object/],

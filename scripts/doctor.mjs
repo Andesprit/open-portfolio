@@ -50,7 +50,8 @@ catch (e) {
 }
 if (!isObject(data)) stop(`${dataFile} must contain one JSON object ({ "settings": {...}, "sections": [...], "social": [...] }), not ${JSON.stringify(data)?.slice(0, 40)}.`);
 if (!isObject(data.settings)) stop(`${dataFile}: "settings" must be an object such as { "name": "Your Name", "basePath": "" }.`);
-const base = data.settings.basePath ?? '';
+// Only an omitted basePath means the root; SvelteKit rejects an explicit null.
+const base = data.settings.basePath === undefined ? '' : data.settings.basePath;
 if (typeof base !== 'string' || (base !== '' && (!base.startsWith('/') || base.endsWith('/')))) {
 	stop(`${dataFile}: settings.basePath is ${JSON.stringify(base)}. Use "" when the site is served at the root of its address (username.github.io or a custom domain), or "/repository-name" for a GitHub project site: it must start with "/" and must not end with "/".`);
 }
