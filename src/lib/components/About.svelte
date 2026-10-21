@@ -3,7 +3,11 @@
   import { marked } from 'marked';
   import { base } from '$app/paths';
   import { getAbsoluteLink } from '$lib/utils/linkUtils';
+  import { emailAddress, findSocial, mailtoHref } from '$lib/utils/contactUtils';
   export let portfolioData: PortfolioData;
+  $: email = findSocial(portfolioData.social, 'email');
+  $: resume = findSocial(portfolioData.social, 'resume');
+  $: resumeLabel = resume && /\.pdf(?:$|[?#])/i.test(resume.link) ? 'Resume (PDF)' : 'Resume';
 
 </script>
 
@@ -14,7 +18,7 @@
           <span class="title-tag">{portfolioData.settings.title}</span>
           <div class="social-links">
           {#each portfolioData.social as social}
-            {#if social.name.toLowerCase() !== 'email'}
+            {#if !['email', 'resume'].includes(social.name.toLowerCase())}
               <a href={getAbsoluteLink(social.link, base)} class="social-link" title={social.name} target="_blank" rel="noopener noreferrer">
                 <img src={social.icon} alt={social.name + ' icon'}>
               </a>
@@ -23,6 +27,20 @@
           </div>
         </div>
           <h2>{portfolioData.settings.name}</h2>
+          {#if email || resume}
+            <div class="contact-actions">
+              {#if email}
+                <a class="contact-action" href={mailtoHref(email.link)}>
+                  {#if email.icon}<img src={email.icon} alt="" />{/if}<span class="contact-label">Email</span> <span class="contact-address">{emailAddress(email.link)}</span>
+                </a>
+              {/if}
+              {#if resume}
+                <a class="contact-action" href={getAbsoluteLink(resume.link, base)} target="_blank" rel="noopener noreferrer">
+                  {#if resume.icon}<img src={resume.icon} alt="" />{/if}{resumeLabel}
+                </a>
+              {/if}
+            </div>
+          {/if}
           <div class="markdown-content">
             {@html marked.parse(portfolioData.settings.bio)}
           </div>
@@ -102,6 +120,53 @@
     -webkit-background-clip: text;  
     -webkit-text-fill-color: transparent;  
     margin: 20px 0; 
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .contact-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    max-width: 100%;
+  }
+
+  .contact-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    box-sizing: border-box;
+    padding: 8px 16px;
+    border-radius: 22px;
+    background: var(--tag-background);
+    border: var(--tag-border);
+    color: var(--text-color);
+    font-weight: 500;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+    transition: transform 0.2s ease;
+  }
+
+  .contact-action:hover {
+    transform: translateY(-2px);
+  }
+
+  .contact-action img {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+    filter: var(--icon-filter, invert(0%) brightness(1));
+  }
+
+  .contact-label {
+    white-space: nowrap;
+  }
+
+  .contact-address {
+    min-width: 0;
+    font-weight: 400;
+    color: var(--text-secondary-color);
   }
 
   .markdown-content {
