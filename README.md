@@ -22,6 +22,7 @@ A fully customizable, modern portfolio website built with **SvelteKit** and **Ty
   - [Removing Custom Pages](#removing-custom-pages)
 - [⚙️ Settings Configuration](#️-settings-configuration)
 - [📦 Deployment on GitHub Pages](#-deployment-on-github-pages)
+- [🔧 Troubleshooting](#-troubleshooting)
 - [📄 License](#-license)
 - [🤝 Contributing](#-contributing)
 - [📧 Support](#-support)
@@ -30,36 +31,77 @@ A fully customizable, modern portfolio website built with **SvelteKit** and **Ty
 
 ### Prerequisites
 
-- Node.js 18+
-- npm or yarn
+- [Node.js](https://nodejs.org/) 24 LTS (the version in `.nvmrc`, also used by the GitHub Pages workflow) and npm
+- Git
 
-### Installation
+### 1. Get the code
 
-1. **Clone the repository**
+- **Just trying it locally?** Clone the template:
 
-   ```bash
-   git clone https://github.com/username/open-portfolio.git
-   cd open-portfolio
-   ```
+  ```bash
+  git clone https://github.com/Andesprit/open-portfolio.git
+  cd open-portfolio
+  ```
 
-2. **Install dependencies**
+- **Publishing your own portfolio?** Click **Fork** on [Andesprit/open-portfolio](https://github.com/Andesprit/open-portfolio), then clone your copy:
 
-   ```bash
-   npm install
-   ```
+  ```bash
+  git clone https://github.com/your-username/your-repository-name.git
+  cd your-repository-name
+  ```
 
-3. **Run development server**
-   ```bash
-   npm run dev
-   ```
-4. **Configure your portfolio**
-   Edit `src/content/data/portfolio-data.json` with your information
+  Your clone already pushes to your repository, so you do not need `git remote add`.
 
-5. **Add your assets**
+### 2. Install
 
-   - Place images in `static/images/`
-   - Place icons in `static/icons/`
-   - Add your resume as `static/CV.pdf`
+```bash
+npm ci
+```
+
+npm may print `npm warn install-scripts` lines about a few packages. The install still succeeded if it ends with `added ... packages`.
+
+### 3. Personalize and watch it live
+
+```bash
+npm run dev
+```
+
+Open the address it prints (usually `http://localhost:5173/`). Development always runs at the root `/`, whatever `basePath` says.
+
+- Change `settings.name` in `src/content/data/portfolio-data.json`; the page updates when you save.
+- Edit or add an entry, for example `src/content/projects/open-portfolio.md` (see [Creating a new Project](#creating-a-new-project)).
+- Put images in `static/images/`, icons in `static/icons/` and your resume at `static/CV.pdf`.
+
+Problems in your JSON or Markdown appear as a notice on the page; see [Configuration feedback](#configuration-feedback).
+
+### 4. Check your setup
+
+```bash
+npm run doctor
+```
+
+It reads your files without changing anything. It checks that the packages are installed, that `portfolio-data.json` is valid JSON and that `settings.basePath` has the right shape, and it lists your content warnings. When something blocks the build, it names the file, key or command that fixes it and exits with an error. It does not build or deploy; `npm run build` reports broken page links.
+
+### 5. Build and preview the real site
+
+Set `settings.basePath` to where the site will live:
+
+| Your site address | `basePath` |
+| --- | --- |
+| `https://your-username.github.io/` (a repository named `your-username.github.io`) | `""` |
+| A custom domain, such as `https://example.com/` | `""` |
+| `https://your-username.github.io/your-repository-name/` (any other repository) | `"/your-repository-name"` |
+
+Then:
+
+```bash
+npm run build
+npm run preview
+```
+
+Open `http://localhost:4173` followed by your `basePath` and `/`, for example `http://localhost:4173/portfolio/` with the sample `"/portfolio"`, or `http://localhost:4173/` with `""`. `npm run doctor` prints this address for you. `4173` is the default port; if Vite prints another address, use that one. The root `/` shows "not found" when `basePath` is set; that is expected.
+
+When the preview looks right, follow [Deployment on GitHub Pages](#-deployment-on-github-pages). A working preview does not prove that GitHub will deploy it; check the Actions tab after you push.
 
 ## ✨ Features
 
@@ -418,9 +460,10 @@ The `settings` object in `portfolio-data.json` controls global portfolio behavio
 - **`theme`** _(optional)_ - Select any of the 8 available themes (defaults to "light")
   - Light themes: `"light"`, `"ocean-light"`, `"forest-light"`, `"sunset-light"`
   - Dark themes: `"dark"`, `"ocean-dark"`, `"forest-dark"`, `"sunset-dark"`
-- **`basePath`** _(Required)_ - **Only** for GitHub Pages deployment (use your repository name)
-  - Local development: `""` (empty string)
-  - GitHub Pages: `"/your-repository-name"`
+- **`basePath`** _(optional, defaults to `""`)_ - Where the production site lives; development ignores it and always runs at `/`
+  - Site at the root of its address (`your-username.github.io` repository or a custom domain): `""`
+  - GitHub project site (`https://your-username.github.io/your-repository-name/`): `"/your-repository-name"`, with a leading `/` and no trailing `/`
+  - See the table in [Build and preview the real site](#5-build-and-preview-the-real-site); `npm run doctor` checks the shape
 - **`potrait_image`** _(required)_ - Path to your profile photo (place image in `static/images/`)
   - Example: Place `profile.jpg` in `static/images/` and use `"images/profile.jpg"`
 - **`expertises`** _(optional)_ - Array of your key skills displayed as tags in the about section
@@ -430,88 +473,66 @@ The `settings` object in `portfolio-data.json` controls global portfolio behavio
 
 ## 📦 Deployment on GitHub Pages
 
-### Automatic Deployment with GitHub Actions
+The included workflow (`.github/workflows/deploy.yml`) builds the site with the Node version in `.nvmrc` and publishes it to GitHub Pages on every push to `main`.
 
-The portfolio uses **GitHub Actions** for automatic deployment. Simply push your repository and it will deploy automatically!
+### Step 1: Have your own repository
 
-### Step 1: Create GitHub Repository
+If you followed [Get the code](#1-get-the-code) for publishing, your clone already points at your repository; go to Step 2.
 
-1. **Create a new repository on GitHub**:
+If you cloned `Andesprit/open-portfolio` to try it, create an empty **public** repository on GitHub, then point your clone at it. `origin` already exists, so replace its address instead of adding a new one:
 
-   - Go to [GitHub](https://github.com) and sign in
-   - Click the "+" icon in the top right corner
-   - Select "New repository"
-   - Give it a name (e.g., `portfolio`)
-   - Make sure it's set to **Public**
-   - Click "Create repository"
+```bash
+git remote set-url origin https://github.com/your-username/your-repository-name.git
+```
 
-2. **Connect your local project to GitHub**:
+### Step 2: Set `basePath` and preview
 
-   ```bash
-   git remote add origin https://github.com/your-username/your-repository-name.git
-   ```
+Set `settings.basePath` from the table in [Build and preview the real site](#5-build-and-preview-the-real-site) (for example `"/your-repository-name"`), then run `npm run doctor`, `npm run build` and `npm run preview` and open the address `npm run doctor` prints.
 
-   > **Note**: Replace `your-username/your-repository-name` with your actual GitHub username and repository name.
-
-### Step 2: Configure Repository Name
-
-1. **Update `portfolio-data.json`**:
-
-   ```json
-   {
-   	"settings": {
-   		"basePath": "/your-repository-name"
-   	}
-   }
-   ```
-
-### Step 3: Push to GitHub
-
-1. **(Optional) Rename 'master' to 'main'**:
-    ```bash
-   git branch -M main
-   ```
-
-2. **Push your initial commit**:
-
-   ```bash
-   git add .
-   git commit -m "My initial portfolio commit"
-   git push origin main
-   ```
-
-### Step 4: Enable GitHub Pages
+### Step 3: Enable GitHub Pages
 
 1. Go to your repository **Settings**
-2. Navigate to **Pages** section
-3. Ensure source is set to **GitHub Actions**
+2. Navigate to the **Pages** section
+3. Set the source to **GitHub Actions**
 
 ![Actions](static/images/actions.jpg)
 
-4. **GitHub Actions will automatically**:
-   - Build your portfolio
-   - Deploy to GitHub Pages
-   - Make it available at `https://yourusername.github.io/your-repository-name`
+### Step 4: Push
 
-That's it! Every time you push changes, your portfolio will automatically redeploy.
+```bash
+git branch -M main   # only if your branch is called master
+git add .
+git commit -m "My portfolio"
+git push origin main
+```
+
+Open the **Actions** tab and wait for the workflow to finish. A green run shows your site address, `https://your-username.github.io/your-repository-name/` for a project site. Every later push to `main` redeploys.
 
 ## 🔧 Troubleshooting
 
-### Deployment Failed
+Run `npm run doctor` first. It names the file, key or command to fix:
 
-If your GitHub Pages deployment fails:
+| Message | Fix |
+| --- | --- |
+| `package(s) are not installed` | Run `npm ci`, then `npm run doctor` again. |
+| `portfolio-data.json is not valid JSON: ... (line L column C)` | Open `src/content/data/portfolio-data.json` at that line; a trailing comma or a missing quote is the usual cause. |
+| `settings.basePath is "portfolio"` | Use `""` or `"/portfolio"`: a leading `/` and no trailing `/`. |
+| `Warning: ...` | The build still works. Fix the file named at the start of the warning; see [Configuration feedback](#configuration-feedback). |
 
-1. **Go to the Actions tab** in your GitHub repository
-2. **Find the failed workflow** (it will have a red X icon)
-3. **Click on the failed workflow** to see details
-4. **Re-run the job** by clicking the "Re-run jobs" button at the top right
-5. **Check the logs** for any specific error messages
+The preview or live site shows "not found" or unstyled pages:
 
-Common issues:
+- The address must include `basePath`: `http://localhost:4173/your-repository-name/`, not `http://localhost:4173/`.
+- `basePath` must match where GitHub serves the site. A project site needs `"/your-repository-name"` with the exact repository name; a `your-username.github.io` repository or a custom domain needs `""`.
 
-- **Build errors**: Check that your `portfolio-data.json` is valid JSON
-- **Missing files**: Ensure all referenced images and icons exist in the `static/` folder
-- **basePath configuration**: Make sure the `basePath` in settings matches your repository name exactly
+`npm run build` fails although `npm run doctor` is ready:
+
+- `Missing file ...` lines are only warnings. A real failure such as `404 /your-repository-name/projects/...` means a link to a page that does not exist; fix that link in the JSON or Markdown named in the message.
+
+The GitHub deployment fails:
+
+1. Open the **Actions** tab and click the failed run (red X).
+2. Read the first error in the log. Fix it locally, confirm with `npm run doctor`, `npm run build` and `npm run preview`, and push again.
+3. If **Deploy to GitHub Pages** fails, check that Settings > Pages uses **GitHub Actions** as its source. Use **Re-run jobs** only after fixing the cause, or for a temporary GitHub error.
 
 ## 📄 License
 
