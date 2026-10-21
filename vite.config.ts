@@ -2,6 +2,22 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import fs from 'fs';
 import path from 'path';
+import { validatePortfolio } from './src/lib/utils/validatePortfolio.js';
+
+function validatePortfolioConfig() {
+    return {
+        name: 'validate-portfolio-config',
+        configResolved(config: import('vite').ResolvedConfig) {
+            // SvelteKit starts a second build for SSR; report only once at startup.
+            if (config.build.ssr) return;
+            const data = JSON.parse(fs.readFileSync(path.join(config.root, 'src/content/data/portfolio-data.json'), 'utf8'));
+            const warnings = validatePortfolio(data);
+            if (warnings.length) {
+                fs.writeSync(2, `\nportfolio-data.json: ${warnings.length} configuration warning(s) (build continues):\n${warnings.map(warning => `  - ${warning}`).join('\n')}\n\n`);
+            }
+        }
+    };
+}
 
 // Plugin to copy content images to static folder during build
 function copyContentImages() {
@@ -48,7 +64,7 @@ function copyContentImages() {
 }
 
 export default defineConfig({
-    plugins: [copyContentImages(), sveltekit()],
+    plugins: [validatePortfolioConfig(), copyContentImages(), sveltekit()],
     resolve: {
         alias: {
             
