@@ -92,4 +92,4 @@ export function getTagsByFrequency(items: Array<{ metadata: { tags?: string[] | 
     return Object.entries(tagFrequency)
         .sort(([,a], [,b]) => b - a)
         .map(([tag]) => tag);
-} 
+}

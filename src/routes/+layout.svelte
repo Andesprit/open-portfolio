@@ -49,6 +49,12 @@
 	<meta name="portfolio-theme" content={portfolioData.settings?.theme || 'light'} />
 </svelte:head>
 
+{#if import.meta.env.DEV}
+	{#await import('$lib/components/ConfigNotice.svelte') then { default: ConfigNotice }}
+		<ConfigNotice warnings={data?.configWarnings || []} />
+	{/await}
+{/if}
+
 {#if !isErrorPage}
 	<Navbar {portfolioData} />
 {/if}

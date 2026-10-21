@@ -63,4 +63,4 @@ export function findSectionByType(portfolioData: { sections: PortfolioSection[] 
             typeof s.title === 'string' &&
             s.title.toLowerCase().replace(/\s+/g, '-') === type
     );
-} 
+}

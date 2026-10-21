@@ -21,4 +21,4 @@ export function processContentSections(markdownSections: (PortfolioSection & { p
         };
         return acc;
     }, {});
-} 
+}

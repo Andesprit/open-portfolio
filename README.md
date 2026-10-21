@@ -233,7 +233,18 @@ Each section in the `sections` array supports:
 }
 ```
 
+### Configuration feedback
+
+`npm run dev` and `npm run build` check `src/content/data/portfolio-data.json` for unsupported themes or card types, missing owner names or section titles, duplicate section anchors, likely key typos, missing markdown folders, and missing local images or icons in `static/`. Messages name the JSON field, its value, and a suggested fix. For example, `settings.portrait_image` suggests the existing key `potrait_image`; keep that spelling for compatibility.
+
+During development, a collapsible notice shows the same warnings on the page. Saving the JSON file reruns the checks, refreshes the page, and removes the notice when the problems are fixed. This notice is excluded from production builds.
+
+These checks warn and let the build continue, leaving your JSON unchanged. Custom keys are allowed; only likely key typos are flagged. External image URLs and empty optional icons are allowed. Invalid JSON syntax, broken page links and other rendering errors can still fail the build. Missing local assets keep the existing warning-only policy.
+
+A missing owner name uses "Portfolio" in navigation. Sections without a usable title are skipped until fixed; the warning tells you which title to add.
+
 ## 📂 Project Structure
+
 
 ```
 src/
