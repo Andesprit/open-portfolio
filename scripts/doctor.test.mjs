@@ -54,7 +54,7 @@ test('blocking setup problems give one line naming the fix and exit 1', () => {
 		[{ data: withSettings({ basePath: 'portfolio' }) }, /settings\.basePath is "portfolio".*must start with "\/"/],
 		[{ data: withSettings({ basePath: '/portfolio/' }) }, /must not end with "\/"/],
 		[{ data: withSettings({ basePath: 5 }) }, /settings\.basePath is 5/],
-		[{ data: withSettings({ basePath: null }) }, /settings\.basePath is null\. Use ""/],
+		[{ data: withSettings({ basePath: null }) }, /settings\.basePath is null\. Use "" \(or leave the key out\)/],
 		[{ data: '{\n "settings": {"name": "X",}\n' }, /not valid JSON: .*line 2 column/],
 		[{ data: null }, /portfolio-data\.json is missing/],
 		[{ data: '[]' }, /must contain one JSON object/],
