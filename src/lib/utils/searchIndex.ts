@@ -1,4 +1,5 @@
 import type { MarkdownContent, PortfolioSection } from '$lib/types/types';
+import type { Passage } from './headingOutline';
 
 export interface SearchEntry {
 	title: string;
@@ -7,6 +8,10 @@ export interface SearchEntry {
 	tags: string[];
 	href: string;
 	targetId?: string;
+	passages?: Passage[];
+	/** Set on results that matched inside an article: the section heading and the words around the match. */
+	heading?: string;
+	excerpt?: string;
 }
 
 export function inlineItemId(sectionTitle: string, originalIndex: number): string {
@@ -25,7 +30,8 @@ function plainText(value: unknown): string {
 export function buildSearchIndex(
 	sections: PortfolioSection[],
 	base: string,
-	loadMarkdown: (path: string) => MarkdownContent[]
+	loadMarkdown: (path: string) => MarkdownContent[],
+	loadPassages: (path: string, slug: string) => Passage[] = () => []
 ): SearchEntry[] {
 	const entries: SearchEntry[] = [];
 	for (const section of sections) {
@@ -51,9 +57,10 @@ export function buildSearchIndex(
 				entries.push({
 					title: item.metadata.title,
 					section: section.title,
-					text: plainText(item.metadata.description || item.html),
+					text: plainText(item.metadata.description),
 					tags: Array.isArray(tags) ? tags : tags.split(',').map((tag) => tag.trim()),
-					href: `${base}/${anchor}/${encodeURIComponent(item.slug)}`
+					href: `${base}/${anchor}/${encodeURIComponent(item.slug)}`,
+					passages: loadPassages(section.path, item.slug)
 				});
 			}
 		} else {
@@ -84,11 +91,37 @@ export function buildSearchIndex(
 	return entries;
 }
 
+function excerpt(text: string, word: string): string {
+	const at = Math.max(0, text.toLowerCase().indexOf(word));
+	const start = Math.max(0, text.lastIndexOf(' ', Math.max(0, at - 60)) + 1);
+	const end = text.indexOf(' ', at + 100);
+	return `${start > 0 ? '… ' : ''}${text.slice(start, end < 0 ? undefined : end)}${end < 0 ? '' : ' …'}`;
+}
+
+// An article that does not match as a whole gives one result: its best section, preferring heading matches.
 export function searchEntries(entries: SearchEntry[], query: string): SearchEntry[] {
 	const words = query.toLowerCase().trim().split(/\s+/).filter(Boolean);
 	if (!words.length) return [];
-	return entries.filter((entry) => {
-		const text = [entry.title, entry.section, entry.text, ...entry.tags].join(' ').toLowerCase();
+	const matches = (...parts: string[]) => {
+		const text = parts.join(' ').toLowerCase();
 		return words.every((word) => text.includes(word));
+	};
+	return entries.flatMap((entry) => {
+		if (matches(entry.title, entry.section, entry.text, ...entry.tags)) return [entry];
+		const passages = (entry.passages || []).filter((passage) =>
+			matches(entry.title, passage.heading || '', passage.text)
+		);
+		const best =
+			passages.find((passage) => matches(entry.title, passage.heading || '')) || passages[0];
+		if (!best) return [];
+		const word = words.find((w) => best.text.toLowerCase().includes(w));
+		return [
+			{
+				...entry,
+				href: best.id ? `${entry.href}#${best.id}` : entry.href,
+				heading: best.heading,
+				excerpt: word ? excerpt(best.text, word) : best.text.slice(0, 160)
+			}
+		];
 	});
 }

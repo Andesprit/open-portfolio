@@ -170,8 +170,8 @@
 						on:click={(event) => chooseResult(event, result)}
 					>
 						<strong>{result.title}</strong>
-						<small>{result.section}</small>
-						{#if result.text}<span>{result.text.slice(0, 160)}</span>{/if}
+						<small>{result.heading ? `${result.section} · ${result.heading}` : result.section}</small>
+						{#if result.excerpt || result.text}<span>{result.excerpt || result.text.slice(0, 160)}</span>{/if}
 					</a>
 				</li>
 			{/each}

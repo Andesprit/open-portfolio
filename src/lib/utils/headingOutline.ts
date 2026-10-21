@@ -1,4 +1,4 @@
-import type { MarkedExtension, Tokens } from 'marked';
+import { Marked, type MarkedExtension, type Tokens } from 'marked';
 
 // Static ids rendered by the layout and shared components; headingOutline.test.mjs keeps this list complete.
 export const PAGE_IDS = ['about', 'contact', 'error-title', 'portfolio-search', 'search-help', 'search-title'];
@@ -71,4 +71,30 @@ export function createHeadingOutline(reserved: string[] = PAGE_IDS) {
     }
 
     return { extension, outline };
+}
+
+export interface Passage {
+    id?: string;
+    heading?: string;
+    text: string;
+}
+
+// Inline tags join their words; block tags separate them.
+const toText = (html: string) =>
+    decodeEntities(html.replace(/<\/?(?:a|b|code|del|em|i|mark|span|strong)\b[^>]*>/g, '').replace(/<[^>]*>/g, ' '))
+        .replace(/\s+/g, ' ')
+        .trim();
+
+/**
+ * Splits an article into the text under each heading, with the ids its page renders.
+ * Each passage keeps only its own text, so search data grows with the article, not its depth.
+ */
+export function articlePassages(markdown: string): Passage[] {
+    const html = new Marked().use(createHeadingOutline().extension).parse(markdown) as string;
+    return html.split(/(?=<h[1-6] id=")/).flatMap((part) => {
+        const heading = part.match(/^<h[1-6] id="([^"]+)">([\s\S]*?) <a class="heading-anchor"[^>]*>#<\/a><\/h[1-6]>/);
+        const text = toText(heading ? part.slice(heading[0].length) : part);
+        if (!heading) return text ? [{ text }] : [];
+        return [{ id: heading[1], heading: toText(heading[2]), text }];
+    });
 }
