@@ -2,6 +2,7 @@
 	import type { PageData } from './$types';
 	import { base } from '$app/paths';
 	import '/src/styles/slug-page.css';
+	import { codeCopy } from '$lib/utils/codeCopy';
 
 	export let data: PageData;
 	$: outlineLinks = data.outline.reduce((count, entry) => count + 1 + entry.children.length, 0);
@@ -56,7 +57,7 @@
 		{#if data.metadata.image}
 			<img src={data.metadata.image} alt={data.metadata.title} />
 		{/if}
-		<div class="content">
+		<div class="content" use:codeCopy={data.html}>
 			{@html data.html}
 		</div>
 		{#if data.nextItem}
