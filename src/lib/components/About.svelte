@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { PortfolioData } from '../types/types.js';
   import { marked } from 'marked';
+  import { base } from '$app/paths';
+  import { getAbsoluteLink } from '$lib/utils/linkUtils';
   export let portfolioData: PortfolioData;
 
 </script>
@@ -13,7 +15,7 @@
           <div class="social-links">
           {#each portfolioData.social as social}
             {#if social.name.toLowerCase() !== 'email'}
-              <a href={social.link} class="social-link" title={social.name} target="_blank" rel="noopener noreferrer">
+              <a href={getAbsoluteLink(social.link, base)} class="social-link" title={social.name} target="_blank" rel="noopener noreferrer">
                 <img src={social.icon} alt={social.name + ' icon'}>
               </a>
             {/if}

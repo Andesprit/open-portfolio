@@ -114,9 +114,9 @@
 				<div class="details">
 						<h3 class="title-ref">{item.metadata?.title}</h3>
 					{#if item.metadata?.description}
-						<p class="description">
+						<div class="description">
 							<TruncatedMarkdown text={item.metadata.description} limit={truncationLimit} />
-						</p>
+						</div>
 					{/if}
 				</div>
 			</div>

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { theme, themeLoading } from '$lib/stores/themeStore';
+	import { theme } from '$lib/stores/themeStore';
 	import type { LayoutData } from './$types';
 	import '../styles/global.css';
 	import Navbar from '../lib/components/NavBar.svelte';
@@ -44,12 +44,6 @@
 	<meta name="portfolio-theme" content={data.portfolioData.settings?.theme || 'light'} />
 </svelte:head>
 
-<!-- Show content only after theme is properly initialized -->
-{#if !$themeLoading}
-	<Navbar portfolioData={data.portfolioData} />
-	<slot />
-	<Footer portfolioData={data.portfolioData} />
-{:else}
-	<!-- Optional: minimal loading state -->
-	<div class="theme-loading-spinner"></div>
-{/if}
+<Navbar portfolioData={data.portfolioData} />
+<slot />
+<Footer portfolioData={data.portfolioData} />

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { PortfolioData } from '../types/types.js';
 	import { base } from '$app/paths';
+	import { getAbsoluteLink } from '$lib/utils/linkUtils';
 
 	export let portfolioData: PortfolioData;
 
@@ -51,7 +52,7 @@
 					{#if social.name.toLowerCase() !== 'email'}
 						<a
 							class="footer-social-link"
-							href={social.link}
+							href={getAbsoluteLink(social.link, base)}
 							target="_blank"
 							rel="noopener noreferrer"
 						>
