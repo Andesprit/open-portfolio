@@ -27,7 +27,13 @@
 
 			if (hash && !isDetailPage) {
 				requestAnimationFrame(() => {
-					const element = document.querySelector(hash);
+					// Ids such as Unicode heading slugs arrive percent-encoded and are not valid selectors.
+					let element: HTMLElement | null = null;
+					try {
+						element = document.getElementById(decodeURIComponent(hash.slice(1)));
+					} catch {
+						return;
+					}
 					if (element) {
 						element.scrollIntoView({ behavior: 'smooth' });
 					}
