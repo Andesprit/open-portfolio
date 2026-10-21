@@ -5,7 +5,7 @@ import { join } from 'node:path';
 import { Marked } from 'marked';
 import { markedHighlight } from 'marked-highlight';
 import hljs from 'highlight.js';
-import { createHeadingOutline, PAGE_IDS } from './headingOutline.ts';
+import { articlePassages, createHeadingOutline, PAGE_IDS } from './headingOutline.ts';
 
 function render(markdown, headings = createHeadingOutline()) {
 	const marked = new Marked(
@@ -82,4 +82,34 @@ test('PAGE_IDS covers every static id rendered by components and routes', () => 
 		.flatMap((f) => [...readFileSync(f, 'utf-8').matchAll(/\bid="([^"{]+)"/g)].map((m) => m[1]));
 	assert.ok(found.length > 0);
 	for (const id of found) assert.ok(PAGE_IDS.includes(id), `${id} missing from PAGE_IDS`);
+});
+
+test('article passages use the same ids as the rendered article and keep only their own text', () => {
+	const markdown = [
+		'Lead text before any heading.',
+		'## Intro',
+		'Intro body.',
+		'### Café & **Résumé**',
+		'Nested body.',
+		'## Intro',
+		'Second intro.',
+		'## Contact',
+		'```js\nconst value = "<b>x</b>";\n```',
+		'## Empty'
+	].join('\n\n');
+	const passages = articlePassages(markdown);
+	assert.deepEqual(
+		passages.map((p) => p.id),
+		[undefined, ...ids(render(markdown).html)]
+	);
+	assert.deepEqual(passages, [
+		{ text: 'Lead text before any heading.' },
+		{ id: 'intro', heading: 'Intro', text: 'Intro body.' },
+		{ id: 'café-résumé', heading: 'Café & Résumé', text: 'Nested body.' },
+		{ id: 'intro-2', heading: 'Intro', text: 'Second intro.' },
+		{ id: 'contact-2', heading: 'Contact', text: 'const value = "<b>x</b>";' },
+		{ id: 'empty', heading: 'Empty', text: '' }
+	]);
+	assert.deepEqual(articlePassages('Just **one** paragraph with `code`.'), [{ text: 'Just one paragraph with code.' }]);
+	assert.deepEqual(articlePassages(''), []);
 });
