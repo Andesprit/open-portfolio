@@ -1,6 +1,6 @@
 import { marked } from 'marked';
 import type { MarkdownContent, PortfolioSection } from '$lib/types/types';
-import { inlineItemId } from './searchIndex';
+import { inlineItemId } from './cardIds.js';
 import { shouldSortSectionByDate, sortItemsByDate } from './dateSortUtils';
 import { getAbsoluteLink } from './linkUtils';
 

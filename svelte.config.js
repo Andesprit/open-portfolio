@@ -2,6 +2,7 @@ import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import fs from 'fs';
 import path from 'path';
+import { inlineCardIds } from './src/lib/utils/cardIds.js';
 
 const dataFilePath = path.join(process.cwd(), 'src', 'content', 'data', 'portfolio-data.json');
 
@@ -27,7 +28,12 @@ const config = {
 
         prerender: {
             // Legacy portfolios can also contain navigation to an unrendered section.
-            handleMissingId: 'warn',
+            handleMissingId: ({ path: pagePath, id, message }) => {
+                const base = process.env.NODE_ENV === 'production' ? portfolioData.settings.basePath : '';
+                // Cards on later pagination pages are not in the prerendered home HTML; the page reveals them on load.
+                if (pagePath === `${base}/` && inlineCardIds(portfolioData.sections).has(id)) return;
+                fs.writeSync(2, `${message}\n`);
+            },
             handleHttpError: ({ status, path: missingPath, referrer, message }) => {
                 const base = process.env.NODE_ENV === 'production' ? portfolioData.settings.basePath : '';
                 const file = missingPath.startsWith(`${base}/`)

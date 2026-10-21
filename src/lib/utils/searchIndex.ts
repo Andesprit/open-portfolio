@@ -14,9 +14,9 @@ export interface SearchEntry {
 	excerpt?: string;
 }
 
-export function inlineItemId(sectionTitle: string, originalIndex: number): string {
-	return `${sectionTitle.toLowerCase().replace(/\s+/g, '-')}--item-${originalIndex + 1}`;
-}
+import { inlineItemId } from './cardIds.js';
+
+export { inlineItemId };
 
 function plainText(value: unknown): string {
 	return typeof value === 'string'
