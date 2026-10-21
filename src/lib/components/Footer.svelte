@@ -1,32 +1,22 @@
 <script lang="ts">
 	import type { PortfolioData } from '../types/types.js';
 	import { base } from '$app/paths';
+	import { onMount } from 'svelte';
 	import { getAbsoluteLink } from '$lib/utils/linkUtils';
+	import { copyText, emailAddress, mailtoHref } from '$lib/utils/contactUtils';
 
 	export let portfolioData: PortfolioData;
 
-	let copied: boolean = false;
+	// Keyed by the entry's position so one address's result never shows on another.
+	let copiedIndex = -1;
+	let failedIndex = -1;
+	let mounted = false;
+	onMount(() => (mounted = true));
 
-	function copyToClipboard(email: string): void {
-		if (!email) {
-			console.error('Clipboard API not available.');
-			alert('Sorry, copying to clipboard is not supported in your browser.');
-			return;
-		}
-		navigator.clipboard
-			.writeText(email)
-			.then(() => {
-				copied = true;
-				requestAnimationFrame(() => {
-					setTimeout(() => {
-						copied = false;
-					}, 2000);
-				});
-			})
-			.catch((err: Error) => {
-				console.error('Failed to copy email: ', err);
-				alert('Failed to copy email to clipboard.');
-			});
+	async function copyToClipboard(index: number, email: string): Promise<void> {
+		copiedIndex = failedIndex = -1;
+		if (await copyText(email)) copiedIndex = index;
+		else failedIndex = index;
 	}
 
 	// Helper function to ensure absolute paths for icons
@@ -40,7 +30,7 @@
 	}
 </script>
 
-<footer class="footer">
+<footer class="footer" id="contact" tabindex="-1">
 	<div class="footer-content">
 		<div class="footer-section">
 			<h3>{portfolioData.settings.name}</h3>
@@ -64,27 +54,43 @@
 		</div>
 
 		<div class="footer-section">
-			{#each portfolioData.social as social}
-				{#if social.name.toLowerCase() === 'email'}
-					<div class="footer-email">
-						<a href={`mailto:${social.link}`} class="email-link">
-							{#if social.icon}<img
-									src={getAbsoluteIconPath(social.icon)}
-									alt="Email"
-									class="email-icon"
-								/>{/if}
-							<span>{social.link}</span>
-						</a>
-						<button
-							class="footer-copy-button"
-							on:click={() => social.link && copyToClipboard(social.link)}
-							title="Copy email address"
-						>
-							<img
-								src={getAbsoluteIconPath(copied ? 'icons/check-icon.svg' : 'icons/copy-icon.svg')}
-								alt={copied ? 'Copied' : 'Copy'}
-							/>
-						</button>
+			{#each portfolioData.social as social, index}
+				{#if social.name.toLowerCase() === 'email' && social.link?.trim()}
+					{@const address = emailAddress(social.link)}
+					<div class="footer-email-group">
+						<div class="footer-email">
+							<a href={mailtoHref(social.link)} class="email-link">
+								{#if social.icon}<img
+										src={getAbsoluteIconPath(social.icon)}
+										alt="Email"
+										class="email-icon"
+									/>{/if}
+								<span>{address}</span>
+							</a>
+							{#if mounted}
+								<button
+									class="footer-copy-button"
+									on:click={() => copyToClipboard(index, address)}
+									title="Copy email address"
+									aria-label={`Copy ${address}`}
+								>
+									<img
+										src={getAbsoluteIconPath(
+											copiedIndex === index ? 'icons/check-icon.svg' : 'icons/copy-icon.svg'
+										)}
+										alt=""
+									/>
+								</button>
+							{/if}
+						</div>
+						<p class="copy-status" role="status">
+							{#if copiedIndex === index}
+								Email address copied.
+							{:else if failedIndex === index}
+								Your browser blocked copying. Select <span class="manual-address">{address}</span> or
+								use the email link.
+							{/if}
+						</p>
 					</div>
 				{/if}
 			{/each}
@@ -145,6 +151,27 @@
 		transform: translateY(-2px);
 	}
 
+	.footer-email-group {
+		max-width: 100%;
+	}
+
+	.footer:focus {
+		outline: none;
+	}
+
+	.copy-status {
+		margin: 6px 0 0;
+		color: var(--text-secondary-color);
+		font-size: 0.85rem;
+		overflow-wrap: anywhere;
+	}
+
+	.manual-address {
+		user-select: all;
+		color: var(--text-color);
+		font-weight: 600;
+	}
+
 	.email-link {
 		display: flex;
 		align-items: center;
@@ -153,6 +180,8 @@
 		color: var(--text-color);
 		font-size: 1rem;
 		flex: 1;
+		min-width: 0;
+		overflow-wrap: anywhere;
 		transition: color 0.2s ease;
 	}
 
