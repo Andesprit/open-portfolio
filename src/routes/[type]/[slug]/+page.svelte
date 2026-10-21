@@ -4,6 +4,7 @@
 	import '/src/styles/slug-page.css';
 
 	export let data: PageData;
+	$: outlineLinks = data.outline.reduce((count, entry) => count + 1 + entry.children.length, 0);
 	$: sectionTitle = data.portfolioData.sections.find(
 		(section) => typeof section.title === 'string' && section.title.toLowerCase().replace(/\s+/g, '-') === data.type
 	)?.title || data.type;
@@ -33,6 +34,27 @@
 				</div>
 			</div>
 		</header>
+		{#if outlineLinks > 1}
+			<details class="article-outline">
+				<summary>On this page <span class="outline-count">({outlineLinks} sections)</span></summary>
+				<nav aria-label="On this page">
+					<ol>
+						{#each data.outline as entry}
+							<li>
+								<a href="#{entry.id}">{entry.text}</a>
+								{#if entry.children.length}
+									<ol>
+										{#each entry.children as child}
+											<li><a href="#{child.id}">{child.text}</a></li>
+										{/each}
+									</ol>
+								{/if}
+							</li>
+						{/each}
+					</ol>
+				</nav>
+			</details>
+		{/if}
 		{#if data.metadata.image}
 			<img src={data.metadata.image} alt={data.metadata.title} />
 		{/if}
