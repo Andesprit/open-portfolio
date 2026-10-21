@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { base } from '$app/paths';
+	import { goto } from '$app/navigation';
+	import { cardTargetEvent } from '$lib/utils/cardTarget';
 	import { searchEntries, type SearchEntry } from '$lib/utils/searchIndex';
 
 	let ready = false;
@@ -12,6 +14,7 @@
 	let loading = false;
 	let failed = false;
 	let activeIndex = -1;
+	let returnFocus = true;
 	$: results = searchEntries(entries || [], query);
 
 	onMount(() => {
@@ -19,6 +22,7 @@
 	});
 
 	async function openSearch() {
+		returnFocus = true;
 		query = '';
 		activeIndex = -1;
 		dialog.showModal();
@@ -55,6 +59,18 @@
 			event.preventDefault();
 			void openSearch();
 		}
+	}
+
+	async function chooseResult(event: MouseEvent, result: SearchEntry) {
+		if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button !== 0)
+			return;
+		returnFocus = false;
+		dialog.close();
+		if (!result.targetId) return;
+		event.preventDefault();
+		await goto(result.href, { noScroll: true, keepFocus: true });
+		// Also reveal repeated selections when the URL hash has not changed.
+		window.dispatchEvent(new Event(cardTargetEvent));
 	}
 
 	function handleResultKeys(event: KeyboardEvent) {
@@ -106,7 +122,9 @@
 	bind:this={dialog}
 	aria-labelledby="search-title"
 	on:keydown={handleResultKeys}
-	on:close={() => trigger?.focus({ preventScroll: true })}
+	on:close={() => {
+		if (returnFocus) trigger?.focus({ preventScroll: true });
+	}}
 >
 	<div class="dialog-heading">
 		<h2 id="search-title">Search portfolio</h2>
@@ -142,7 +160,7 @@
 						href={result.href}
 						tabindex={index === Math.max(0, activeIndex) ? 0 : -1}
 						on:focus={() => (activeIndex = index)}
-						on:click={() => dialog.close()}
+						on:click={(event) => chooseResult(event, result)}
 					>
 						<strong>{result.title}</strong>
 						<small>{result.section}</small>

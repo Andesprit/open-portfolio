@@ -5,6 +5,7 @@
 	import Cards from './sections/Cards/Cards.svelte';
 	import CardsWithIcons from '$lib/components/sections/Cards/CardsWithIcons.svelte';
 	import { sortItemsByDate, shouldSortSectionByDate } from '$lib/utils/dateSortUtils';
+	import { inlineItemId } from '$lib/utils/searchIndex';
 
 	export let portfolioData: PortfolioData;
 	export let content: PageData['content'];
@@ -15,13 +16,14 @@
 	// Function to get sorted items for a section
 	function getSortedItems(section: any): any[] {
 		if (!section.content) return [];
+		const items = section.content.map((item: any, index: number) => ({ ...item, searchId: inlineItemId(section.title, index) }));
 
 		// Only sort if the section has items with date fields
 		if (shouldSortSectionByDate(section)) {
-			return sortItemsByDate(section.content);
+			return sortItemsByDate(items);
 		}
 
-		return section.content;
+		return items;
 	}
 </script>
 
@@ -34,7 +36,7 @@
 			truncationLimit={section.truncation_limit || 150}
 		/>
 	{:else if section.type === 'cards_with_icons'}
-		<CardsWithIcons skillsData={section.content as any} />
+		<CardsWithIcons title={section.title} skillsData={getSortedItems(section)} />
 	{:else if section.type === 'cards'}
 		<Cards
 			sectionTitle={section.title}

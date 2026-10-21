@@ -29,10 +29,31 @@ test('index uses base-rooted detail URLs, excludes skipped items and unrendered 
 	assert.equal(searchEntries(entries, 'tYpeScript')[0].href, '/portfolio/blog-posts/typescript');
 	assert.equal(searchEntries(entries, 'learn code')[0].text, 'Learn types');
 	assert.equal(searchEntries(entries, 'python')[0].section, 'Skills');
-	assert.equal(searchEntries(entries, 'python')[0].href, '/portfolio/#skills');
+	assert.equal(searchEntries(entries, 'python')[0].href, '/portfolio/#skills--item-1');
 	assert.deepEqual(searchEntries(entries, 'skipped'), []);
 	assert.deepEqual(searchEntries(entries, 'hidden'), []);
 	assert.deepEqual(searchEntries(entries, 'xyzzy'), []);
 	assert.deepEqual(searchEntries(entries, '  '), []);
 	assert.equal(buildSearchIndex(sections.slice(1, 2), '', () => [])[0].href, '/#skills');
+});
+
+test('inline results identify original items independently of display sorting and skipped entries', () => {
+	const entries = buildSearchIndex(
+		[
+			{
+				title: 'Work Experience',
+				type: 'cards_with_link',
+				content: [
+					{ title: 'Older role', organization: 'IBM', date: '2018' },
+					{ title: 'Skipped role', skip: true },
+					{ title: 'Current role', organization: 'Google', date: '2024' }
+				]
+			}
+		],
+		'/portfolio',
+		() => []
+	);
+	assert.equal(searchEntries(entries, 'ibm')[0].href, '/portfolio/#work-experience--item-1');
+	assert.equal(searchEntries(entries, 'google')[0].href, '/portfolio/#work-experience--item-3');
+	assert.equal(searchEntries(entries, 'google')[0].targetId, 'work-experience--item-3');
 });

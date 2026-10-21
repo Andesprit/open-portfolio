@@ -6,6 +6,11 @@ export interface SearchEntry {
 	text: string;
 	tags: string[];
 	href: string;
+	targetId?: string;
+}
+
+export function inlineItemId(sectionTitle: string, originalIndex: number): string {
+	return `${sectionTitle.toLowerCase().replace(/\s+/g, '-')}--item-${originalIndex + 1}`;
 }
 
 function plainText(value: unknown): string {
@@ -52,19 +57,26 @@ export function buildSearchIndex(
 				});
 			}
 		} else {
-			for (const item of section.content || []) {
+			for (const [index, item] of (section.content || []).entries()) {
 				if (item.skip) continue;
+				const targetId = inlineItemId(section.title, index);
 				entries.push({
 					title: plainText(item.title || item.name) || section.title,
 					section: section.title,
-					text: [item.organization, item.publication, item.description]
+					text: [
+						item.organization,
+						item.publication,
+						item.description,
+						...(Array.isArray(item.skills) ? item.skills : [])
+					]
 						.map(plainText)
 						.filter(Boolean)
 						.join(' '),
 					tags: Array.isArray(item.skills)
 						? item.skills.filter((skill): skill is string => typeof skill === 'string')
 						: [],
-					href: sectionHref
+					href: `${base}/#${targetId}`,
+					targetId
 				});
 			}
 		}

@@ -30,6 +30,7 @@ interface Section {
 }
 
 export interface Skill {
+	searchId?: string;
     name: string;
     description: string;
     icon: string;
