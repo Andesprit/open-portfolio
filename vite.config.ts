@@ -24,7 +24,8 @@ function validatePortfolioConfig() {
             report(readPortfolioWarnings(root));
         },
         async handleHotUpdate(context: import('vite').HmrContext) {
-            if (context.file !== path.join(root, 'src/content/data/portfolio-data.json')) return;
+            const markdown = context.file.startsWith(path.join(root, 'src/content') + path.sep) && context.file.endsWith('.md');
+            if (context.file !== path.join(root, 'src/content/data/portfolio-data.json') && !markdown) return;
             // Vite waits for editors to finish writing before returning the new content.
             await context.read();
             report(readPortfolioWarnings(root));

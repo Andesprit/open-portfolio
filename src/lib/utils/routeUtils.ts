@@ -1,5 +1,6 @@
-import { basename, join } from 'path';
-import { readFileSync, readdirSync, existsSync } from 'fs';
+import { join } from 'path';
+import { existsSync } from 'fs';
+import { contentDirectory, readContentFolder } from './contentEntries.js';
 import type { PortfolioSection } from '$lib/types/types';
 
 /**
@@ -21,8 +22,8 @@ export function generateRoutes(portfolioData: { sections: PortfolioSection[] }):
     // Process each section
     sectionsWithPaths.forEach((section) => {
         try {
-            const normalizedPath = section.path.replace(/\/$/, '').replace(/^\//, '');
-            const fullPath = join(process.cwd(), normalizedPath);
+            const directory = contentDirectory(section.path);
+            const fullPath = join(process.cwd(), directory);
             
             // Verify directory exists
             if (!existsSync(fullPath)) {
@@ -30,16 +31,12 @@ export function generateRoutes(portfolioData: { sections: PortfolioSection[] }):
                 return;
             }
 
-            const files = readdirSync(fullPath).filter((file: string) => file.endsWith('.md'));
-            
             // Use a normalized section type for routes
             const routeType = section.title.toLowerCase().replace(/\s+/g, '-');
             
-            files.forEach((file: string) => {
-                routes.push({
-                    type: routeType,
-                    slug: basename(file, '.md')
-                });
+            // Unreadable entries are reported by the content validator and get no page.
+            readContentFolder(process.cwd(), directory).entries.forEach(({ slug }) => {
+                routes.push({ type: routeType, slug });
             });
         } catch (e: unknown) {
             const error = e instanceof Error ? e.message : String(e);

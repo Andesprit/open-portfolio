@@ -26,9 +26,7 @@
 			<div class="metadata">
 				<time datetime={data.metadata.date}>{data.metadata.date}</time>
 				<div class="tags">
-					{#each Array.isArray(data.metadata.tags) ? data.metadata.tags : data.metadata.tags
-								.split(',')
-								.map((tag: string) => tag.trim()) as tag}
+					{#each data.metadata.tags as tag}
 						<span class="tag">{tag}</span>
 					{/each}
 				</div>

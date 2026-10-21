@@ -1,5 +1,4 @@
 import { error, isHttpError } from '@sveltejs/kit';
-import matter from 'gray-matter';
 import { join } from 'path';
 import { readFileSync } from 'fs';
 import type { PageServerLoad, EntryGenerator } from './$types';
@@ -9,6 +8,7 @@ import { createMarkedWithHighlight } from '$lib/utils/markdownHighlightUtils';
 import { createHeadingOutline } from '$lib/utils/headingOutline';
 import { loadNavigationItems, findNextItem } from '$lib/utils/navigationUtils';
 import { processImagePath } from '$lib/utils/imageUtils';
+import { readContentEntry } from '$lib/utils/contentEntries.js';
 
 // Read portfolio data for route generation
 const portfolioData = JSON.parse(readFileSync(join(process.cwd(), 'src', 'content', 'data', 'portfolio-data.json'), 'utf-8')) as {
@@ -44,11 +44,11 @@ export const load: PageServerLoad = async ({ params }) => {
             : `src/${normalizedPath}`;
 
         const contentDir = join(process.cwd(), pathWithSrc);
-        const fullPath = join(contentDir, `${slug}.md`);
 
-        // Read and parse the markdown file
-        const raw = readFileSync(fullPath, 'utf-8');
-        const { data: metadata, content: markdown } = matter(raw);
+        // Read and parse the markdown file; unreadable frontmatter gets no page
+        const entry = readContentEntry(process.cwd(), pathWithSrc, `${slug}.md`);
+        if (!entry.metadata) throw error(404, `Content "${slug}" has unreadable frontmatter`);
+        const { metadata, markdown } = entry;
 
         // Get all navigation items for this content type
         const navigationItems = loadNavigationItems(contentDir);
@@ -80,16 +80,7 @@ export const load: PageServerLoad = async ({ params }) => {
         return {
             slug,
             type,
-            metadata: {
-                title: metadata.title ?? 'Untitled',
-                date: metadata.date || '',
-                link: metadata.link || '',
-                tags: Array.isArray(metadata.tags) ? metadata.tags : metadata.tags?.split(',').map((t: string) => t.trim()) || [],
-                description: metadata.description || '',
-                skip: metadata.skip || false,
-                display_order: typeof metadata.display_order === 'number' ? metadata.display_order : Infinity,
-                image: processedImage
-            },
+            metadata: { ...metadata, image: processedImage },
             html,
             outline: headings.outline(),
             nextItem
