@@ -6,6 +6,7 @@ import type { PageServerLoad, EntryGenerator } from './$types';
 import type { ContentItem, PortfolioSection } from '$lib/types/types';
 import { generateRoutes, findSectionByType } from '$lib/utils/routeUtils';
 import { createMarkedWithHighlight } from '$lib/utils/markdownHighlightUtils';
+import { createHeadingOutline } from '$lib/utils/headingOutline';
 import { loadNavigationItems, findNextItem } from '$lib/utils/navigationUtils';
 import { processImagePath } from '$lib/utils/imageUtils';
 
@@ -59,7 +60,8 @@ export const load: PageServerLoad = async ({ params }) => {
         const sectionType = pathWithSrc.split('/').pop() || 'default';
 
         // Setup marked with syntax highlighting and custom renderer
-        const marked = createMarkedWithHighlight(contentDir, sectionType);
+        const headings = createHeadingOutline();
+        const marked = createMarkedWithHighlight(contentDir, sectionType, headings);
         const html = await marked.parse(markdown);
         
         // Safely process image with error handling
@@ -89,6 +91,7 @@ export const load: PageServerLoad = async ({ params }) => {
                 image: processedImage
             },
             html,
+            outline: headings.outline(),
             nextItem
         } satisfies ContentItem;
 
