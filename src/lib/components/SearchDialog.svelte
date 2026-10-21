@@ -5,10 +5,13 @@
 
 	let ready = false;
 	let dialog: HTMLDialogElement;
+	let trigger: HTMLButtonElement;
+	let searchInput: HTMLInputElement;
 	let entries: SearchEntry[] | undefined;
 	let query = '';
 	let loading = false;
 	let failed = false;
+	let activeIndex = -1;
 	$: results = searchEntries(entries || [], query);
 
 	onMount(() => {
@@ -17,7 +20,9 @@
 
 	async function openSearch() {
 		query = '';
+		activeIndex = -1;
 		dialog.showModal();
+		searchInput.focus();
 		if (entries) return;
 		loading = true;
 		failed = false;
@@ -31,19 +36,94 @@
 			loading = false;
 		}
 	}
+
+	function handleShortcut(event: KeyboardEvent) {
+		const target = event.target;
+		if (
+			event.defaultPrevented ||
+			event.repeat ||
+			dialog?.open ||
+			event.altKey ||
+			(target instanceof Element &&
+				target.closest('input, textarea, select, [contenteditable]:not([contenteditable="false"])'))
+		)
+			return;
+		if (
+			(event.key === '/' && !event.ctrlKey && !event.metaKey) ||
+			(event.key.toLowerCase() === 'k' && (event.ctrlKey || event.metaKey))
+		) {
+			event.preventDefault();
+			void openSearch();
+		}
+	}
+
+	function handleResultKeys(event: KeyboardEvent) {
+		if (event.key === 'Tab' && !event.ctrlKey && !event.metaKey) {
+			const stops = dialog.querySelectorAll<HTMLElement>(
+				'button:not(:disabled), input:not(:disabled), a[tabindex="0"]'
+			);
+			const first = stops[0];
+			const last = stops[stops.length - 1];
+			if (event.shiftKey && document.activeElement === first) {
+				event.preventDefault();
+				last?.focus();
+			} else if (!event.shiftKey && document.activeElement === last) {
+				event.preventDefault();
+				first?.focus();
+			}
+			return;
+		}
+		const target = event.target as Element;
+		if (target !== searchInput && !target.closest('.search-result')) return;
+		const links = dialog.querySelectorAll<HTMLAnchorElement>('.search-result');
+		if (!links.length || event.isComposing) return;
+		if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+			event.preventDefault();
+			const direction = event.key === 'ArrowDown' ? 1 : -1;
+			activeIndex =
+				activeIndex < 0
+					? direction === 1
+						? 0
+						: links.length - 1
+					: (activeIndex + direction + links.length) % links.length;
+			links[activeIndex].focus();
+		} else if (event.key === 'Enter' && target === searchInput) {
+			event.preventDefault();
+			links[Math.max(0, activeIndex)].click();
+		}
+	}
 </script>
 
+<svelte:window on:keydown={handleShortcut} />
+
 {#if ready}
-	<button class="search-trigger" on:click={openSearch}>Search</button>
+	<button bind:this={trigger} class="search-trigger" on:click={openSearch} aria-haspopup="dialog"
+		>Search</button
+	>
 {/if}
 
-<dialog bind:this={dialog} aria-labelledby="search-title">
+<dialog
+	bind:this={dialog}
+	aria-labelledby="search-title"
+	on:keydown={handleResultKeys}
+	on:close={() => trigger?.focus({ preventScroll: true })}
+>
 	<div class="dialog-heading">
 		<h2 id="search-title">Search portfolio</h2>
 		<button on:click={() => dialog.close()} aria-label="Close search">Close</button>
 	</div>
 	<label for="portfolio-search">Search projects, posts and more</label>
-	<input id="portfolio-search" type="search" bind:value={query} placeholder="Try TypeScript" />
+	<input
+		bind:this={searchInput}
+		id="portfolio-search"
+		type="search"
+		bind:value={query}
+		on:input={() => (activeIndex = -1)}
+		on:focus={() => (activeIndex = -1)}
+		placeholder="Try TypeScript"
+		aria-describedby="search-help"
+	/>
+	<p id="search-help" class="search-help">↑ ↓ to choose · Enter to open · Esc to close</p>
 	{#if loading}
 		<p role="status">Loading search…</p>
 	{:else if failed}
@@ -53,10 +133,17 @@
 	{:else if query.trim() && !results.length}
 		<p role="status">No matches for "{query}". Try another word or browse the sections.</p>
 	{:else if results.length}
+		<p role="status">{results.length} {results.length === 1 ? 'result' : 'results'}</p>
 		<ul>
-			{#each results as result}
+			{#each results as result, index}
 				<li>
-					<a href={result.href} on:click={() => dialog.close()}>
+					<a
+						class="search-result"
+						href={result.href}
+						tabindex={index === Math.max(0, activeIndex) ? 0 : -1}
+						on:focus={() => (activeIndex = index)}
+						on:click={() => dialog.close()}
+					>
 						<strong>{result.title}</strong>
 						<small>{result.section}</small>
 						{#if result.text}<span>{result.text.slice(0, 160)}</span>{/if}
@@ -76,6 +163,7 @@
 		color: var(--text-color);
 	}
 	button {
+		min-height: 44px;
 		background: var(--card-background);
 		border: 1px solid var(--text-secondary-color);
 		border-radius: 8px;
@@ -133,7 +221,8 @@
 		background: var(--card-background);
 	}
 	small,
-	span {
+	span,
+	.search-help {
 		display: block;
 		margin-top: 4px;
 		color: var(--text-secondary-color);
