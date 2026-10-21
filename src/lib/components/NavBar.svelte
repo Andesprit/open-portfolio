@@ -22,6 +22,14 @@
 			const targetElement = e.currentTarget as HTMLAnchorElement;
 			const href = targetElement.getAttribute('href');
 
+			// Contact lives in the footer of every page, so stay on the current page
+			if (href === '#contact') {
+				e.preventDefault();
+				// Focusing scrolls instantly; a smooth scroll past a long article takes seconds
+				document.getElementById('contact')?.focus();
+				return;
+			}
+
 			// Only prevent default and scroll if it's an internal hash link
 			if (href && href.startsWith('#')) {
 				e.preventDefault();
@@ -44,6 +52,8 @@
 			}
 		}
 	};
+
+	$: hasContact = portfolioData.social.some((social) => social.link?.trim());
 
 	// Function to convert section title to anchor link
 	const titleToAnchor = (title: string): string => {
@@ -107,6 +117,9 @@
 				{#each navLinks as link}
 					<li><a href={link.href} on:click={closeMenu}>{link.title}</a></li>
 				{/each}
+				{#if hasContact}
+					<li><a href="#contact" on:click={closeMenu}>Contact</a></li>
+				{/if}
 				<li><ThemeSwitcher /></li>
 			</ul>
 		</div>
