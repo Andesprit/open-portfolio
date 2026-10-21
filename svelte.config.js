@@ -25,6 +25,25 @@ const config = {
             strict: true
         }),
 
+        prerender: {
+            // Legacy portfolios can also contain navigation to an unrendered section.
+            handleMissingId: 'warn',
+            handleHttpError: ({ status, path: missingPath, referrer, message }) => {
+                const base = process.env.NODE_ENV === 'production' ? portfolioData.settings.basePath : '';
+                const file = missingPath.startsWith(`${base}/`)
+                    ? missingPath.slice(base.length + 1)
+                    : missingPath.replace(/^\//, '');
+                const extension = path.posix.extname(file).toLowerCase();
+                // Missing owner assets should not prevent an otherwise working portfolio from building.
+                if (status === 404 && extension && !['.html', '.htm'].includes(extension)) {
+                    // Flush before SvelteKit terminates the prerender worker.
+                    fs.writeSync(2, `Missing file "${missingPath}" linked from "${referrer || '(unknown page)'}". Add it at "static/${file}" or update its path in portfolio-data.json.\n`);
+                    return;
+                }
+                throw new Error(message);
+            }
+        },
+
         alias: {
             $components: './src/components',
             $lib: './src/lib',
