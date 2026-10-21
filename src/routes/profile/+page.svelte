@@ -117,14 +117,15 @@
 	a { overflow-wrap: anywhere; }
 
 	@media print {
-		@page { margin: 14mm; }
+		/* A named page: an unnamed @page rule would stay active on other pages after client navigation. */
+		@page profile { margin: 14mm; }
 		/* Scoped to pages that contain the profile: this stylesheet stays loaded after client navigation. */
 		:global(html:has(main.profile)),
 		:global(body:has(main.profile)) { background: #fff !important; color: #000 !important; }
 		:global(body:has(main.profile) .navigation),
 		:global(body:has(main.profile) footer) { display: none !important; }
 		.toolbar { display: none; }
-		.profile { max-width: none; padding: 0; font-size: 10.5pt; color: #000; }
+		.profile { page: profile; max-width: none; padding: 0; font-size: 10.5pt; color: #000; }
 		.profile :global(*) { color: #000 !important; }
 		h1 { font-size: 18pt; }
 		h2 { font-size: 13pt; break-after: avoid; }
