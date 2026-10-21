@@ -41,6 +41,7 @@
               {/if}
             </div>
           {/if}
+          <a class="profile-link" href="{base}/profile">Printable profile</a>
           <div class="markdown-content">
             {@html marked.parse(portfolioData.settings.bio)}
           </div>
@@ -157,6 +158,15 @@
     height: 20px;
     flex-shrink: 0;
     filter: var(--icon-filter, invert(0%) brightness(1));
+  }
+
+  .profile-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--text-color);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 
   .contact-label {
