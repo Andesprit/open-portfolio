@@ -237,7 +237,9 @@ Each section in the `sections` array supports:
 
 `npm run dev` and `npm run build` check `src/content/data/portfolio-data.json` for unsupported themes or card types, missing owner names or section titles, duplicate section anchors, likely key typos, missing markdown folders, and missing local images or icons in `static/`. Messages name the JSON field, its value, and a suggested fix. For example, `settings.portrait_image` suggests the existing key `potrait_image`; keep that spelling for compatibility.
 
-During development, a collapsible notice shows the same warnings on the page. Saving the JSON file reruns the checks, refreshes the page, and removes the notice when the problems are fixed. This notice is excluded from production builds.
+Markdown frontmatter is checked too; see [Fixing frontmatter mistakes](#fixing-frontmatter-mistakes). Every warning starts with the file to edit.
+
+During development, a collapsible notice shows the same warnings on the page. Saving the JSON or a Markdown file (or adding, deleting or renaming one) reruns the checks, refreshes the page, and removes the notice when the problems are fixed. This notice is excluded from production builds.
 
 These checks warn and let the build continue, leaving your JSON unchanged. Custom keys are allowed; only likely key typos are flagged. External image URLs and empty optional icons are allowed. Invalid JSON syntax, broken page links and other rendering errors can still fail the build. Missing local assets keep the existing warning-only policy.
 
@@ -315,6 +317,19 @@ This is a comprehensive task management application built with React Native...
 
 ![App interface](images/interface.jpg)
 ```
+
+### Fixing frontmatter mistakes
+
+The fields between the `---` lines are checked by `npm run dev` and `npm run build`, the same way as `portfolio-data.json`. Each warning starts with the Markdown file to edit. For example, `tags: 42` prints:
+
+```
+src/content/projects/my-app.md: tags: 42 is not supported. Use a comma-separated list (tags: TypeScript, Svelte) or brackets (tags: [TypeScript, Svelte]). Using the single tag "42" for now.
+```
+
+Change the line to `tags: ['42']` (or real tags) and save; the warning and the development notice clear. Other mistakes work the same way:
+
+- A value of the wrong kind uses a safe fallback and says which one: a `link` or `image` that is not quoted text is left out, `skip` must be `true` or `false`, `skip: true` without a `link` shows the page, and `display_order` must be a number.
+- Frontmatter that cannot be read at all, such as `title: Part 1: Setup` (an unquoted `:`), names the line and column. That one entry is left out of the site, search and Next links until you fix it, for example with `title: "Part 1: Setup"`. The rest of the folder still publishes.
 
 ### Creating Custom Pages
 
