@@ -48,25 +48,26 @@
 			autocapitalize="off"
 			spellcheck="false"
 			{placeholder}
+			aria-label={placeholder}
 			class="search-input"
 		/>
 	</div>
 
 	<div class="tags-container">
-		<button class="tag" class:active={value.length === 0} on:click={clearAllTags} type="button">
+		<button class="tag" class:active={value.length === 0} aria-pressed={value.length === 0} on:click={clearAllTags} type="button">
 			All Tags
 		</button>
 
 		<!-- Show selected tags first -->
 		{#each selectedTagsFiltered as selectedTag}
-			<button class="tag active" on:click={() => toggleTag(selectedTag)} type="button">
+			<button class="tag active" aria-pressed="true" on:click={() => toggleTag(selectedTag)} type="button">
 				{selectedTag}
 			</button>
 		{/each}
 
 		<!-- Then show non-selected tags -->
 		{#each nonSelectedOptions as option}
-			<button class="tag" on:click={() => toggleTag(option)} type="button">
+			<button class="tag" aria-pressed="false" on:click={() => toggleTag(option)} type="button">
 				{option}
 			</button>
 		{/each}
@@ -111,8 +112,6 @@
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.5rem;
-		overflow: hidden;
-		max-height: 36px;
 	}
 
 	.tag {

@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { cardTargetEvent } from '$lib/utils/cardTarget';
 	import { searchEntries, type SearchEntry } from '$lib/utils/searchIndex';
+	export let onOpen: () => void = () => {};
 
 	let ready = false;
 	let dialog: HTMLDialogElement;
@@ -22,6 +23,7 @@
 	});
 
 	async function openSearch() {
+		onOpen();
 		returnFocus = true;
 		query = '';
 		activeIndex = -1;
@@ -74,6 +76,11 @@
 	}
 
 	function handleResultKeys(event: KeyboardEvent) {
+		if (event.key === 'Escape' && !event.isComposing) {
+			event.preventDefault();
+			dialog.close();
+			return;
+		}
 		if (event.key === 'Tab' && !event.ctrlKey && !event.metaKey) {
 			const stops = dialog.querySelectorAll<HTMLElement>(
 				'button:not(:disabled), input:not(:disabled), a[tabindex="0"]'
@@ -187,6 +194,9 @@
 		border-radius: 8px;
 		padding: 8px 12px;
 		cursor: pointer;
+	}
+	.search-trigger {
+		flex-shrink: 0;
 	}
 	dialog {
 		width: min(600px, calc(100% - 32px));

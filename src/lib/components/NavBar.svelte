@@ -88,7 +88,7 @@
 				</div>
 				<h1 class="name">{ownerName.toUpperCase()}</h1>
 			</a>
-			<SearchDialog />
+			<SearchDialog onOpen={() => (isOpen = false)} />
 		</div>
 
 		<button
@@ -142,9 +142,12 @@
 	.nav-left {
 		display: flex;
 		align-items: center;
+		min-width: 0;
+		gap: 8px;
 	}
 
 	.home-link {
+		min-width: 0;
 		display: flex;
 		align-items: center;
 		gap: 12px;
@@ -162,6 +165,7 @@
 	}
 
 	.logo {
+		flex-shrink: 0;
 		width: 35px;
 		height: 35px;
 		padding: 3px;
@@ -186,7 +190,11 @@
 	}
 
 	.name {
-		flex-shrink: 0;
+		min-width: 0;
+		flex-shrink: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 		font-size: 1.5rem;
 		font-weight: 700;
 		background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
@@ -264,6 +272,8 @@
 
 	@media (max-width: 1400px) {
 		nav {
+			box-sizing: border-box;
+			width: 100%;
 			max-width: 100%;
 			min-width: 100%;
 			padding: 15px;
@@ -271,6 +281,15 @@
 
 		.burger {
 			display: flex;
+		}
+
+		.burger div {
+			margin-right: 0;
+		}
+
+		.nav-left {
+			flex: 1;
+			margin-right: 8px;
 		}
 
 		.nav-right {

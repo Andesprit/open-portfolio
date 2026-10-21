@@ -14,12 +14,12 @@
 	$: itemsPerPage = portfolioData.settings?.cards_before_pagination || 3;
 
 	// Function to get sorted items for a section
-	function getSortedItems(section: any): any[] {
+	function getSortedItems(section: any, sortByDate = true): any[] {
 		if (!section.content) return [];
 		const items = section.content.map((item: any, index: number) => ({ ...item, searchId: inlineItemId(section.title, index) }));
 
 		// Only sort if the section has items with date fields
-		if (shouldSortSectionByDate(section)) {
+		if (sortByDate && shouldSortSectionByDate(section)) {
 			return sortItemsByDate(items);
 		}
 
@@ -36,7 +36,7 @@
 			truncationLimit={section.truncation_limit || 150}
 		/>
 	{:else if section.type === 'cards_with_icons'}
-		<CardsWithIcons title={section.title} skillsData={getSortedItems(section)} />
+		<CardsWithIcons title={section.title} skillsData={getSortedItems(section, false)} />
 	{:else if section.type === 'cards'}
 		<Cards
 			sectionTitle={section.title}
