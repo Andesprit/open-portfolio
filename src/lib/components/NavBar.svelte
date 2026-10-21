@@ -3,6 +3,7 @@
 	import { base } from '$app/paths';
 	import type { PortfolioData } from '../types/types';
 	import ThemeSwitcher from './common/ThemeSwitcher.svelte';
+	import SearchDialog from './SearchDialog.svelte';
 	export let portfolioData: PortfolioData;
 	$: ownerName = typeof portfolioData.settings.name === 'string' && portfolioData.settings.name.trim()
 		? portfolioData.settings.name : 'Portfolio';
@@ -87,6 +88,7 @@
 				</div>
 				<h1 class="name">{ownerName.toUpperCase()}</h1>
 			</a>
+			<SearchDialog />
 		</div>
 
 		<button
