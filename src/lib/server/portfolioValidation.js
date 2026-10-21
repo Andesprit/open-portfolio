@@ -14,12 +14,17 @@ export function readPortfolioWarnings(root) {
 	const warnings = validatePortfolio(data, {
 		isFile: (path) => exists(path, 'isFile'),
 		isDirectory: (path) => exists(path, 'isDirectory')
-	});
+	}).map((warning) => `src/content/data/portfolio-data.json: ${warning}`);
 	// Markdown frontmatter problems, one per file and field, from the same reader the pages use.
 	for (const section of Array.isArray(data.sections) ? data.sections : []) {
 		if (typeof section?.path !== 'string' || !section.path.trim()) continue;
 		const directory = contentDirectory(section.path);
-		if (exists(directory, 'isDirectory')) warnings.push(...readContentFolder(root, directory).warnings);
+		if (!exists(directory, 'isDirectory')) continue;
+		try { warnings.push(...readContentFolder(root, directory).warnings); }
+		catch (e) {
+			const code = /** @type {{ code?: string }} */ (e).code ?? String(e);
+			warnings.push(`${directory}: the folder could not be read (${code}), so none of its entries are shown. Check that you have permission to read it.`);
+		}
 	}
 	return warnings;
 }

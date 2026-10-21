@@ -3,10 +3,10 @@
 </script>
 
 {#if warnings.length}
-	<aside class="development-config-notice" aria-label="Portfolio configuration warnings" aria-live="polite">
+	<aside class="development-config-notice" aria-label="Portfolio content warnings" aria-live="polite">
 		<details open>
-			<summary><strong>Portfolio configuration: {warnings.length} {warnings.length === 1 ? 'warning' : 'warnings'}</strong></summary>
-			<p>Development only. Edit <code>src/content/data/portfolio-data.json</code> and save to update these checks.</p>
+			<summary><strong>Portfolio content: {warnings.length} {warnings.length === 1 ? 'warning' : 'warnings'}</strong></summary>
+			<p>Development only. Each warning starts with the file to edit: <code>portfolio-data.json</code> or a Markdown post's frontmatter between the <code>---</code> lines. Save the file and these checks update.</p>
 			<ul>
 				{#each warnings as warning}
 					<li>{warning}</li>

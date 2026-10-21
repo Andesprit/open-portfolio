@@ -9,12 +9,15 @@ function validatePortfolioConfig() {
     let hadWarnings = false;
     function report(warnings: string[]) {
         if (warnings.length) {
-            fs.writeSync(2, `\nportfolio-data.json: ${warnings.length} configuration warning(s) (build continues):\n${warnings.map(warning => `  - ${warning}`).join('\n')}\n\n`);
+            fs.writeSync(2, `\nPortfolio content: ${warnings.length} warning(s), each starting with the file to edit (build continues):\n${warnings.map(warning => `  - ${warning}`).join('\n')}\n\n`);
         } else if (hadWarnings) {
-            fs.writeSync(2, 'portfolio-data.json: configuration warnings cleared.\n');
+            fs.writeSync(2, 'Portfolio content: all warnings cleared.\n');
         }
         hadWarnings = warnings.length > 0;
     }
+    // Content Markdown lives under src/ (any configured section path); it is read with fs, not imported.
+    const isContent = (file: string) => file === path.join(root, 'src/content/data/portfolio-data.json') ||
+        (file.startsWith(path.join(root, 'src') + path.sep) && file.endsWith('.md'));
     return {
         name: 'validate-portfolio-config',
         configResolved(config: import('vite').ResolvedConfig) {
@@ -23,9 +26,18 @@ function validatePortfolioConfig() {
             root = config.root;
             report(readPortfolioWarnings(root));
         },
+        configureServer(server: import('vite').ViteDevServer) {
+            // handleHotUpdate only runs for edits; new, deleted and renamed files arrive here.
+            for (const event of ['add', 'unlink']) {
+                server.watcher.on(event, (file: string) => {
+                    if (!isContent(file)) return;
+                    report(readPortfolioWarnings(root));
+                    server.ws.send({ type: 'full-reload' });
+                });
+            }
+        },
         async handleHotUpdate(context: import('vite').HmrContext) {
-            const markdown = context.file.startsWith(path.join(root, 'src/content') + path.sep) && context.file.endsWith('.md');
-            if (context.file !== path.join(root, 'src/content/data/portfolio-data.json') && !markdown) return;
+            if (!isContent(context.file)) return;
             // Vite waits for editors to finish writing before returning the new content.
             await context.read();
             report(readPortfolioWarnings(root));
