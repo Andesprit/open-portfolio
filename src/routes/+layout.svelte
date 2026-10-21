@@ -1,15 +1,20 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { theme } from '$lib/stores/themeStore';
+	import { page } from '$app/stores';
+	import configuredPortfolioData from '../content/data/portfolio-data.json';
+	import type { PortfolioData } from '$lib/types/types';
 	import type { LayoutData } from './$types';
 	import '../styles/global.css';
 	import Navbar from '../lib/components/NavBar.svelte';
 	import Footer from '../lib/components/Footer.svelte';
 	export let data: LayoutData;
+	$: portfolioData = data?.portfolioData || (configuredPortfolioData as PortfolioData);
+	$: isErrorPage = Boolean($page.error) || $page.route.id === '/404';
 
 	onMount(() => {
 		// Theme is already applied by blocking script, just sync the store
-		theme.init(data.portfolioData.settings?.theme || 'light');
+		theme.init(portfolioData.settings?.theme || 'light');
 
 		const handleHashChange = () => {
 			const hash = window.location.hash;
@@ -41,9 +46,13 @@
 
 <svelte:head>
 	<!-- Pass portfolio theme to the blocking script -->
-	<meta name="portfolio-theme" content={data.portfolioData.settings?.theme || 'light'} />
+	<meta name="portfolio-theme" content={portfolioData.settings?.theme || 'light'} />
 </svelte:head>
 
-<Navbar portfolioData={data.portfolioData} />
+{#if !isErrorPage}
+	<Navbar {portfolioData} />
+{/if}
 <slot />
-<Footer portfolioData={data.portfolioData} />
+{#if !isErrorPage}
+	<Footer {portfolioData} />
+{/if}

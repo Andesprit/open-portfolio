@@ -1,12 +1,16 @@
 <script lang="ts">
-	import type { ContentItem } from '$lib/types/types';
+	import type { PageData } from './$types';
 	import { base } from '$app/paths';
 	import '/src/styles/slug-page.css';
 
-	export let data: ContentItem;
+	export let data: PageData;
+	$: sectionTitle = data.portfolioData.sections.find(
+		(section) => section.title.toLowerCase().replace(/\s+/g, '-') === data.type
+	)?.title || data.type;
 </script>
 
 <svelte:head>
+	<title>{data.metadata.title} | {data.portfolioData.settings.name}</title>
 	<link
 		rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css"
@@ -15,6 +19,7 @@
 
 <div class="slug-page-container">
 	<article class="slug-article">
+		<a class="back-link" href="{base}/#{data.type}">← Back to {sectionTitle}</a>
 		<header>
 			<h1>{data.metadata.title}</h1>
 			<div class="metadata">
@@ -28,7 +33,9 @@
 				</div>
 			</div>
 		</header>
-		<img src={data.metadata.image} alt={data.metadata.image} />
+		{#if data.metadata.image}
+			<img src={data.metadata.image} alt={data.metadata.title} />
+		{/if}
 		<div class="content">
 			{@html data.html}
 		</div>
@@ -42,3 +49,11 @@
 		{/if}
 	</article>
 </div>
+
+<style>
+	.back-link {
+		display: inline-block;
+		margin-bottom: 1rem;
+		text-decoration: underline;
+	}
+</style>

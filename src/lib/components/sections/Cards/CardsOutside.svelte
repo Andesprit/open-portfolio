@@ -17,6 +17,12 @@
 
 	let currentPage = 1;
 	let selectedTags: string[] = [];
+	let sectionElement: HTMLElement;
+
+	function clearFilters() {
+		selectedTags = [];
+		requestAnimationFrame(() => sectionElement.querySelector('button')?.focus());
+	}
 
 	// Filter items based on the selected tags, return all items if no tags are selected.
 	$: filteredItems =
@@ -64,6 +70,7 @@
 </script>
 
 <section
+	bind:this={sectionElement}
 	id={sectionTitle.toLowerCase().replace(/\s+/g, '-')}
 	class="section slug-section"
 	use:fadeIn
@@ -77,6 +84,17 @@
 				onChange={handleTagChange}
 				placeholder="Search tags..."
 			/>
+		</div>
+	{/if}
+
+	{#if filteredItems.length === 0}
+		<div class="empty-state" role="status">
+			{#if selectedTags.length > 0}
+				<p>No matching {sectionTitle.toLowerCase()}. Try different tags or clear the filters.</p>
+				<button type="button" on:click={clearFilters}>Clear filters</button>
+			{:else}
+				<p>No {sectionTitle.toLowerCase()} yet.</p>
+			{/if}
 		</div>
 	{/if}
 
@@ -124,3 +142,29 @@
 	{/each}
 	<Pagination {currentPage} {totalPages} onPageChange={handlePageChange} />
 </section>
+
+<style>
+	.empty-state {
+		margin: 24px 20px;
+		padding: 24px;
+		border: var(--card-border);
+		border-radius: 12px;
+		background: var(--card-background);
+		color: var(--text-color);
+	}
+
+	.empty-state button {
+		padding: 8px 12px;
+		border: 1px solid var(--primary-color);
+		border-radius: 4px;
+		background: var(--background-color);
+		color: var(--primary-color);
+		font: inherit;
+		cursor: pointer;
+	}
+
+	.empty-state button:focus-visible {
+		outline: 2px solid var(--primary-color);
+		outline-offset: 2px;
+	}
+</style>

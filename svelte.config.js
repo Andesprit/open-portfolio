@@ -21,7 +21,6 @@ const config = {
         adapter: adapter({
             pages: 'build',
             assets: 'build',
-            fallback: '404.html',
             precompress: false,
             strict: true
         }),
@@ -35,6 +34,8 @@ const config = {
         },
 
         paths: {
+            // A static 404 is served at arbitrary depths, so its assets and home link must be rooted.
+            relative: false,
             // Apply '/your-repo-name' only when building for production (npm run build)
             // Use an empty string '' for local development (npm run dev)
             base: process.env.NODE_ENV === 'production' ? portfolioData.settings.basePath : '',
