@@ -149,7 +149,8 @@ Available themes are `light`, `ocean-light`, `forest-light`, `sunset-light`,
 `dark`, `ocean-dark`, `forest-dark`, and `sunset-dark`.
 
 `basePath` is optional and defaults to `""`; development ignores it and always
-runs at `/`. A repository path needs a leading `/` and no trailing `/`. See the
+runs at `/`. A repository path is one name with a leading `/` and no trailing
+`/`, such as `/portfolio`. See the
 table in [Build and preview the real site](#5-build-and-preview-the-real-site);
 `npm run doctor` checks the shape.
 

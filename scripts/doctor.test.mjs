@@ -54,6 +54,7 @@ test('blocking setup problems give one line naming the fix and exit 1', () => {
 	const cases = [
 		[{ data: withSettings({ basePath: 'portfolio' }) }, /settings\.basePath is "portfolio".*must start with "\/"/],
 		[{ data: withSettings({ basePath: '/portfolio/' }) }, /must not end with "\/"/],
+		[{ data: withSettings({ basePath: '/my/portfolio' }) }, /settings\.basePath is "\/my\/portfolio".*is one name/],
 		[{ data: withSettings({ basePath: 5 }) }, /settings\.basePath is 5/],
 		[{ data: withSettings({ basePath: null }) }, /settings\.basePath is null\. Use "" \(or leave the key out\)/],
 		[{ data: 'settings:\n  name: Part 1: Setup\n' }, /not valid YAML: .*line 2, column 9\. Fix that spot/],

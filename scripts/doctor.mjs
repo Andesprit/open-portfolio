@@ -49,6 +49,7 @@ catch (e) {
 }
 // Loaded only now, so a missing install gets the message above instead of a crash.
 const { parse } = await import('yaml');
+const { isBasePath } = await import('../src/lib/server/portfolioData.js');
 let data;
 try { data = parse(text); }
 catch (e) {
@@ -64,8 +65,9 @@ for (const key of ['sections', 'social']) {
 }
 // Only an omitted basePath means the root; SvelteKit rejects an explicit null.
 const base = data.settings.basePath === undefined ? '' : data.settings.basePath;
-if (typeof base !== 'string' || (base !== '' && (!base.startsWith('/') || base.endsWith('/')))) {
-	stop(`${dataFile}: settings.basePath is ${JSON.stringify(base)}. Use "" (or leave the key out) when the site is served at the root of its address (username.github.io or a custom domain), or "/repository-name" for a GitHub project site: it must start with "/" and must not end with "/".`);
+// The same rule as the deploy workflow's "npm test".
+if (!isBasePath(base)) {
+	stop(`${dataFile}: settings.basePath is ${JSON.stringify(base)}. Use "" (or leave the key out) when the site is served at the root of its address (username.github.io or a custom domain), or "/repository-name" for a GitHub project site: it must start with "/", must not end with "/" and is one name of letters, digits, ".", "_" or "-".`);
 }
 
 let warnings;
