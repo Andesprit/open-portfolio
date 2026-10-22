@@ -17,7 +17,7 @@ function fixture() {
 	const root = mkdtempSync(join(tmpdir(), 'portfolio-content-'));
 	mkdirSync(join(root, 'src/content/data'), { recursive: true });
 	mkdirSync(join(root, 'src/notes'), { recursive: true });
-	writeFileSync(join(root, 'src/content/data/portfolio-data.json'), JSON.stringify({
+	writeFileSync(join(root, 'src/content/data/portfolio-data.yaml'), JSON.stringify({
 		settings: { name: 'Owner' },
 		sections: [{ title: 'Field Notes', type: 'cards_outside', path: 'notes/' }]
 	}));

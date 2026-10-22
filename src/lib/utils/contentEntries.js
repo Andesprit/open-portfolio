@@ -2,7 +2,7 @@ import matter from 'gray-matter';
 import { readFileSync, readdirSync } from 'node:fs';
 import { basename, join } from 'node:path';
 
-/** @param {string} path section.path from portfolio-data.json */
+/** @param {string} path section.path from portfolio-data.yaml */
 export function contentDirectory(path) {
 	const normalized = path.replace(/\/$/, '').replace(/^\//, '');
 	return normalized.startsWith('src/') ? normalized : `src/${normalized}`;

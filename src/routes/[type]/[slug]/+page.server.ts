@@ -1,6 +1,5 @@
 import { error, isHttpError } from '@sveltejs/kit';
 import { join } from 'path';
-import { readFileSync } from 'fs';
 import type { PageServerLoad, EntryGenerator } from './$types';
 import type { ContentItem, PortfolioSection } from '$lib/types/types';
 import { generateRoutes, findSectionByType } from '$lib/utils/routeUtils';
@@ -9,9 +8,10 @@ import { createHeadingOutline } from '$lib/utils/headingOutline';
 import { loadNavigationItems, findNextItem } from '$lib/utils/navigationUtils';
 import { processImagePath } from '$lib/utils/imageUtils';
 import { readContentEntry } from '$lib/utils/contentEntries.js';
+import { loadPortfolioData } from '$lib/server/portfolioData.js';
 
 // Read portfolio data for route generation
-const portfolioData = JSON.parse(readFileSync(join(process.cwd(), 'src', 'content', 'data', 'portfolio-data.json'), 'utf-8')) as {
+const portfolioData = loadPortfolioData() as {
     sections: PortfolioSection[];
 };
 

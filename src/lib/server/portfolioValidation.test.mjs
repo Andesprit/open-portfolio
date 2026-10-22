@@ -13,7 +13,7 @@ test('a new config is checked against actual files and directories on every read
 	const root = mkdtempSync(join(tmpdir(), 'portfolio-validation-'));
 	try {
 		mkdirSync(join(root, 'src/content/data'), { recursive: true });
-		writeFileSync(join(root, 'src/content/data/portfolio-data.json'), JSON.stringify({
+		writeFileSync(join(root, 'src/content/data/portfolio-data.yaml'), JSON.stringify({
 			settings: { name: 'Owner', theme: 'light', potrait_image: 'images/portrait.png' },
 			sections: [{ title: 'Work', type: 'cards_outside', path: 'src/content/work/' }]
 		}));

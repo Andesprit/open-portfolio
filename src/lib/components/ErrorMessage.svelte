@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import portfolioData from '../../content/data/portfolio-data.json';
+	import { page } from '$app/stores';
 
 	export let status = 404;
 	$: notFound = status === 404;
@@ -8,7 +8,7 @@
 </script>
 
 <svelte:head>
-	<title>{title} | {portfolioData.settings.name}</title>
+	<title>{title} | {$page.data.portfolioData?.settings?.name}</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 

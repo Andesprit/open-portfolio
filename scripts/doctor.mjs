@@ -6,11 +6,11 @@ const usage = `Usage: npm run doctor
 
 Checks that this portfolio is ready for "npm run build":
   - the packages from package.json are installed
-  - src/content/data/portfolio-data.json exists and is valid JSON
+  - src/content/data/portfolio-data.yaml exists and is valid YAML
   - settings.basePath is "" (site root) or "/name" (a sub-path)
   - your content, with the same warnings "npm run dev" shows
 It does not build, preview or deploy. Page-link errors are reported by "npm run build".`;
-const dataFile = 'src/content/data/portfolio-data.json';
+const dataFile = 'src/content/data/portfolio-data.yaml';
 const root = process.cwd();
 
 /** @param {string} message */
@@ -40,16 +40,28 @@ if (missing.length) {
 	stop(`${missing.length} package(s) are not installed (${missing.slice(0, 3).join(', ')}${missing.length > 3 ? ', ...' : ''}). Run "npm ci" (or "npm install"), then run "npm run doctor" again.`);
 }
 
-let data;
-try { data = JSON.parse(readFileSync(join(root, dataFile), 'utf8')); }
+let text;
+try { text = readFileSync(join(root, dataFile), 'utf8'); }
 catch (e) {
 	const error = /** @type {NodeJS.ErrnoException} */ (e);
 	if (error.code === 'ENOENT') stop(`${dataFile} is missing. Restore it from the template (git checkout -- ${dataFile}) and edit it.`);
-	if (error.code) stop(`${dataFile} could not be read (${error.code}). Check that you have permission to read it.`);
-	stop(`${dataFile} is not valid JSON: ${error.message}. Fix that spot; a trailing comma or a missing quote is the usual cause.`);
+	stop(`${dataFile} could not be read (${error.code ?? error}). Check that you have permission to read it.`);
 }
-if (!isObject(data)) stop(`${dataFile} must contain one JSON object ({ "settings": {...}, "sections": [...], "social": [...] }), not ${JSON.stringify(data)?.slice(0, 40)}.`);
-if (!isObject(data.settings)) stop(`${dataFile}: "settings" must be an object such as { "name": "Your Name", "basePath": "" }.`);
+// Loaded only now, so a missing install gets the message above instead of a crash.
+const { parse } = await import('yaml');
+let data;
+try { data = parse(text); }
+catch (e) {
+	// The parser's first line names the problem, line and column; the rest is a code excerpt.
+	const where = (e instanceof Error ? e.message : String(e)).split('\n')[0].replace(/:$/, '');
+	stop(`${dataFile} is not valid YAML: ${where}. Fix that spot; uneven indentation, a tab, or text with ": " or "#" that is not in quotes is the usual cause.`);
+}
+if (!isObject(data)) stop(`${dataFile} must contain the settings:, sections: and social: groups at the top level, not ${JSON.stringify(data)?.slice(0, 40)}.`);
+if (!isObject(data.settings)) stop(`${dataFile}: "settings" must be a group of fields, for example settings: { name: Your Name, basePath: "" }.`);
+// The build's loader (src/lib/server/portfolioData.js) refuses a config without these lists.
+for (const key of ['sections', 'social']) {
+	if (!Array.isArray(data[key])) stop(`${dataFile}: "${key}" must be a list of "- " items; write ${key}: [] for an empty one.`);
+}
 // Only an omitted basePath means the root; SvelteKit rejects an explicit null.
 const base = data.settings.basePath === undefined ? '' : data.settings.basePath;
 if (typeof base !== 'string' || (base !== '' && (!base.startsWith('/') || base.endsWith('/')))) {

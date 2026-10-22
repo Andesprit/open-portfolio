@@ -1,15 +1,16 @@
 import { basename, join } from 'path';
-import { existsSync, copyFileSync, mkdirSync, readFileSync } from 'fs';
+import { existsSync, copyFileSync, mkdirSync } from 'fs';
 import { dev } from '$app/environment';
+import { loadPortfolioData } from '$lib/server/portfolioData.js';
 
-// Read basePath from portfolio-data.json
+// Read basePath from portfolio-data.yaml
 function getBasePath(): string {
     try {
-        const portfolioDataPath = join(process.cwd(), 'src', 'content', 'data', 'portfolio-data.json');
-        const portfolioData = JSON.parse(readFileSync(portfolioDataPath, 'utf-8'));
-        return dev ? '' : (portfolioData.settings.basePath || '');
+        const portfolioData = loadPortfolioData();
+        const basePath = portfolioData.settings.basePath;
+        return dev ? '' : (typeof basePath === 'string' ? basePath : '');
     } catch (e) {
-        console.warn('Could not read basePath from portfolio-data.json:', e);
+        console.warn('Could not read basePath from portfolio-data.yaml:', e);
         return '';
     }
 }
@@ -79,4 +80,4 @@ export function processImagePath(imagePath: string, contentDir: string, sectionT
         const basePath = getBasePath();
         return `${basePath}/${imagePath}`;
     }
-} 
+}

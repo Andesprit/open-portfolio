@@ -1,9 +1,10 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { parse } from 'yaml';
 import { validatePortfolio } from './validatePortfolio.js';
 
-const sample = JSON.parse(fs.readFileSync(new URL('../../content/data/portfolio-data.json', import.meta.url), 'utf8'));
+const sample = parse(fs.readFileSync(new URL('../../content/data/portfolio-data.yaml', import.meta.url), 'utf8'));
 
 test('the shipped portfolio needs no config warnings', () => {
 	assert.deepEqual(validatePortfolio(sample), []);
@@ -71,6 +72,7 @@ test('missing content directories use the same src prefix rule as the markdown l
 
 test('missing local assets identify their JSON locations and static destinations', () => {
 	const data = structuredClone(sample);
+	data.settings.basePath = '/portfolio';
 	data.settings.potrait_image = 'images/my-photo-missing.png';
 	data.social[1].icon = '/portfolio/icons/lost.svg?version=2#icon';
 	data.sections[0].content[0].icon = './icons/gogle-icon.svg';

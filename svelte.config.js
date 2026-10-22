@@ -3,15 +3,13 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 import fs from 'fs';
 import path from 'path';
 import { inlineCardIds } from './src/lib/utils/cardIds.js';
+import { loadPortfolioData } from './src/lib/server/portfolioData.js';
 
-const dataFilePath = path.join(process.cwd(), 'src', 'content', 'data', 'portfolio-data.json');
-
-// Add error handling for file reading
 let portfolioData;
 try {
-    portfolioData = JSON.parse(fs.readFileSync(dataFilePath, 'utf-8'));
+    portfolioData = loadPortfolioData();
 } catch (error) {
-    console.error('Error reading portfolio-data.json:', error);
+    console.error('Error reading portfolio-data.yaml:', error);
     portfolioData = { settings: { basePath: '' } };
 }
 /** @type {import('@sveltejs/kit').Config} */
@@ -43,7 +41,7 @@ const config = {
                 // Missing owner assets should not prevent an otherwise working portfolio from building.
                 if (status === 404 && extension && !['.html', '.htm'].includes(extension)) {
                     // Flush before SvelteKit terminates the prerender worker.
-                    fs.writeSync(2, `Missing file "${missingPath}" linked from "${referrer || '(unknown page)'}". Add it at "static/${file}" or update its path in portfolio-data.json.\n`);
+                    fs.writeSync(2, `Missing file "${missingPath}" linked from "${referrer || '(unknown page)'}". Add it at "static/${file}" or update its path in portfolio-data.yaml.\n`);
                     return;
                 }
                 throw new Error(message);

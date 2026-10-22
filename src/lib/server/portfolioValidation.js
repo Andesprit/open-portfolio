@@ -1,11 +1,12 @@
 import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
+import { parse } from 'yaml';
 import { validatePortfolio } from '../utils/validatePortfolio.js';
 import { contentDirectory, readContentFolder } from '../utils/contentEntries.js';
 
 /** @param {string} root */
 export function readPortfolioWarnings(root) {
-	const data = JSON.parse(readFileSync(join(root, 'src/content/data/portfolio-data.json'), 'utf8'));
+	const data = parse(readFileSync(join(root, 'src/content/data/portfolio-data.yaml'), 'utf8'));
 	/** @param {string} path @param {'isFile' | 'isDirectory'} kind */
 	function exists(path, kind) {
 		try { return statSync(join(root, path))[kind](); }
@@ -14,7 +15,7 @@ export function readPortfolioWarnings(root) {
 	const warnings = validatePortfolio(data, {
 		isFile: (path) => exists(path, 'isFile'),
 		isDirectory: (path) => exists(path, 'isDirectory')
-	}).map((warning) => `src/content/data/portfolio-data.json: ${warning}`);
+	}).map((warning) => `src/content/data/portfolio-data.yaml: ${warning}`);
 	// Markdown frontmatter problems, one per file and field, from the same reader the pages use.
 	for (const section of Array.isArray(data.sections) ? data.sections : []) {
 		if (typeof section?.path !== 'string' || !section.path.trim()) continue;

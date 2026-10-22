@@ -2,14 +2,12 @@
 	import { onMount } from 'svelte';
 	import { theme } from '$lib/stores/themeStore';
 	import { page } from '$app/stores';
-	import configuredPortfolioData from '../content/data/portfolio-data.json';
-	import type { PortfolioData } from '$lib/types/types';
 	import type { LayoutData } from './$types';
 	import '../styles/global.css';
 	import Navbar from '../lib/components/NavBar.svelte';
 	import Footer from '../lib/components/Footer.svelte';
 	export let data: LayoutData;
-	$: portfolioData = data?.portfolioData || (configuredPortfolioData as PortfolioData);
+	$: portfolioData = data.portfolioData;
 	$: isErrorPage = Boolean($page.error) || $page.route.id === '/404';
 
 	onMount(() => {

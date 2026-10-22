@@ -4,14 +4,15 @@ import { spawnSync } from 'node:child_process';
 import { cpSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { parse, stringify } from 'yaml';
 
 const repo = process.cwd();
 const doctor = join(repo, 'scripts/doctor.mjs');
-const dataFile = 'src/content/data/portfolio-data.json';
-const sample = JSON.parse(readFileSync(join(repo, dataFile), 'utf8'));
+const dataFile = 'src/content/data/portfolio-data.yaml';
+const sample = parse(readFileSync(join(repo, dataFile), 'utf8'));
 
 /** A throwaway portfolio with the sample content; `data` replaces the config text. */
-function run({ data = JSON.stringify(sample), modules = true, args = [], extra = () => {} } = {}) {
+function run({ data = stringify(sample), modules = true, args = [], extra = () => {} } = {}) {
 	const root = mkdtempSync(join(tmpdir(), 'portfolio-doctor-'));
 	try {
 		cpSync(join(repo, 'package.json'), join(root, 'package.json'));
@@ -27,7 +28,7 @@ function run({ data = JSON.stringify(sample), modules = true, args = [], extra =
 		return { code: result.status, out: result.stdout, err: result.stderr };
 	} finally { rmSync(root, { recursive: true, force: true }); }
 }
-const withSettings = (settings) => JSON.stringify({ ...sample, settings: { ...sample.settings, ...settings } });
+const withSettings = (settings) => stringify({ ...sample, settings: { ...sample.settings, ...settings } });
 
 test('a healthy project site reports what was checked, its base and the preview address', () => {
 	const { code, out, err } = run({ data: withSettings({ basePath: '/portfolio' }) });
@@ -41,7 +42,7 @@ test('a healthy project site reports what was checked, its base and the preview 
 
 test('a root site previews at /, whether basePath is "" or omitted', () => {
 	const { basePath, ...settings } = sample.settings;
-	for (const data of [withSettings({ basePath: '' }), JSON.stringify({ ...sample, settings })]) {
+	for (const data of [withSettings({ basePath: '' }), stringify({ ...sample, settings })]) {
 		const { code, out } = run({ data });
 		assert.equal(code, 0);
 		assert.match(out, /\(site root\)/);
@@ -55,11 +56,13 @@ test('blocking setup problems give one line naming the fix and exit 1', () => {
 		[{ data: withSettings({ basePath: '/portfolio/' }) }, /must not end with "\/"/],
 		[{ data: withSettings({ basePath: 5 }) }, /settings\.basePath is 5/],
 		[{ data: withSettings({ basePath: null }) }, /settings\.basePath is null\. Use "" \(or leave the key out\)/],
-		[{ data: '{\n "settings": {"name": "X",}\n' }, /not valid JSON: .*line 2 column/],
-		[{ data: null }, /portfolio-data\.json is missing/],
-		[{ data: '[]' }, /must contain one JSON object/],
-		[{ data: 'null' }, /must contain one JSON object/],
-		[{ data: '{"sections": []}' }, /"settings" must be an object/],
+		[{ data: 'settings:\n  name: Part 1: Setup\n' }, /not valid YAML: .*line 2, column 9\. Fix that spot/],
+		[{ data: null }, /portfolio-data\.yaml is missing/],
+		[{ data: '[]' }, /must contain the settings:, sections: and social: groups/],
+		[{ data: '' }, /must contain the settings:, sections: and social: groups/],
+		[{ data: '{"sections": []}' }, /"settings" must be a group of fields/],
+		[{ data: stringify({ ...sample, social: undefined }) }, /"social" must be a list/],
+		[{ data: stringify({ ...sample, sections: {} }) }, /"sections" must be a list/],
 		[{ modules: false }, /package\(s\) are not installed.*npm ci/]
 	];
 	for (const [options, message] of cases) {

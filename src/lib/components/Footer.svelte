@@ -4,6 +4,7 @@
 	import { onMount } from 'svelte';
 	import { getAbsoluteLink } from '$lib/utils/linkUtils';
 	import { copyText, emailAddress, mailtoHref } from '$lib/utils/contactUtils';
+	import { theme } from '$lib/stores/themeStore';
 
 	export let portfolioData: PortfolioData;
 
@@ -101,6 +102,7 @@
 		<p>
 			&copy; 2025 <a href="https://github.com/open-portfolio/open-portfolio" target="_blank">Open Portfolio</a> Licensed under the <a href="https://opensource.org/licenses/MIT" target="_blank">MIT License</a>
 		</p>
+		<p><a class="andesprit-footer-link" href="https://andesprit.com" lang="en"><img class="andesprit-footer-logo" src={getAbsoluteIconPath($theme === 'dark' || $theme.endsWith('-dark') ? 'assets/andesprit-mark-dark.svg' : 'assets/andesprit-mark-light.svg')} width="24" height="24" alt="" aria-hidden="true" /><span>copyright andesprit</span></a></p>
 	</div>
 </footer>
 
@@ -346,5 +348,29 @@
 			width: 20px;
 			height: 20px;
 		}
+	}
+
+	.footer-bottom .andesprit-footer-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		min-height: 44px;
+		margin-block: 6px;
+		color: inherit;
+		font-size: 14px;
+		text-transform: none;
+		text-decoration: underline;
+		text-underline-offset: 4px;
+	}
+	.footer-bottom .andesprit-footer-link:focus-visible {
+		outline: 2px solid currentColor;
+		outline-offset: 4px;
+	}
+
+	.andesprit-footer-logo {
+		display: block;
+		width: 24px;
+		height: 24px;
+		flex: 0 0 24px;
 	}
 </style>

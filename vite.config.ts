@@ -16,7 +16,7 @@ function validatePortfolioConfig() {
         hadWarnings = warnings.length > 0;
     }
     // Content Markdown lives under src/ (any configured section path); it is read with fs, not imported.
-    const isContent = (file: string) => file === path.join(root, 'src/content/data/portfolio-data.json') ||
+    const isContent = (file: string) => file === path.join(root, 'src/content/data/portfolio-data.yaml') ||
         (file.startsWith(path.join(root, 'src') + path.sep) && file.endsWith('.md'));
     return {
         name: 'validate-portfolio-config',
