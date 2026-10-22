@@ -187,3 +187,112 @@ time {
          padding: 1rem;
     }
 }
+/* Plain selectors: this stylesheet is not scoped, so :global() would never match. */
+.article-outline {
+    margin: -1rem 0 2rem;
+    padding: 0.75rem 1rem;
+    border: var(--card-border);
+    border-radius: 8px;
+    color: var(--text-color);
+}
+
+.article-outline summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--secondary-color);
+}
+
+.article-outline .outline-count {
+    font-weight: 400;
+    color: var(--text-color);
+}
+
+.article-outline ol {
+    list-style: none;
+    margin: 0.5rem 0 0;
+    padding-left: 0;
+}
+
+.article-outline ol ol {
+    margin: 0.25rem 0 0.25rem;
+    padding-left: 1rem;
+    /* --card-border is a whole "1px solid color" value, so widen it after. */
+    border-left: var(--card-border);
+    border-left-width: 2px;
+}
+
+.article-outline li {
+    margin: 0.35rem 0;
+    line-height: 1.4;
+}
+
+.article-outline a {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.article-outline summary:focus-visible,
+.article-outline a:focus-visible,
+.content .heading-anchor:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+/* html already reserves 100px for the fixed navbar; this keeps headings a little clear of it. */
+.content :is(h1, h2, h3, h4, h5, h6)[id] {
+    scroll-margin-top: 24px;
+}
+
+/* Dimmed but always visible, so touch and keyboard readers can find it too. */
+.content .heading-anchor {
+    margin-left: 0.25rem;
+    padding: 0 0.25rem;
+    font-weight: 400;
+    text-decoration: none;
+    opacity: 0.45;
+}
+
+.content :is(h1, h2, h3, h4, h5, h6):hover .heading-anchor,
+.content .heading-anchor:focus-visible,
+.content :is(h1, h2, h3, h4, h5, h6):target .heading-anchor {
+    opacity: 1;
+}
+
+/* Copy code bar above each code block; added by the codeCopy action, so it never shows without JS. */
+.content .code-copy {
+    display: flex;
+    flex-wrap: wrap-reverse;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.25rem 0.75rem;
+    margin: 1rem 0 0.25rem;
+}
+
+.content .code-copy-button {
+    min-height: 44px;
+    padding: 0 1rem;
+    border: var(--card-border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--secondary-color);
+    font: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.content .code-copy-button:hover {
+    border-color: var(--primary-color);
+}
+
+.content .code-copy-button:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+}
+
+.content .code-copy-status {
+    font-size: 0.9rem;
+}
+
+.content .code-copy + pre {
+    margin-top: 0;
+}

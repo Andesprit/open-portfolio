@@ -1,4 +1,5 @@
 import type { Theme } from "$lib/stores/themeStore";
+import type { OutlineEntry } from "$lib/utils/headingOutline";
 
 export interface Metadata {
     date: string;
@@ -30,6 +31,7 @@ interface Section {
 }
 
 export interface Skill {
+	searchId?: string;
     name: string;
     description: string;
     icon: string;
@@ -73,6 +75,7 @@ export interface ContentItem {
     type: string;
     metadata: Metadata;
     html: string;
+    outline: OutlineEntry[];
     nextItem?: ContentReference;
 }
 

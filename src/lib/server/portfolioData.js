@@ -11,6 +11,20 @@ export const portfolioDataPath = join(
 );
 
 /**
+ * settings.basePath: "" (or no key) for a site at the root of its address, such as a
+ * <username>.github.io repository or a custom domain, or "/name" for a GitHub project site.
+ * SvelteKit rejects null, so only a missing key counts as the root.
+ *
+ * @param {unknown} basePath
+ */
+export function isBasePath(basePath) {
+	return (
+		basePath === undefined ||
+		(typeof basePath === 'string' && /^(\/[A-Za-z0-9._-]+)?$/.test(basePath))
+	);
+}
+
+/**
  * Read and validate the portfolio's YAML configuration.
  *
  * @param {string} [filePath]

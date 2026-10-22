@@ -2,14 +2,20 @@ import { Marked } from 'marked';
 import { markedHighlight } from "marked-highlight";
 import hljs from 'highlight.js';
 import { processImagePath } from './imageUtils';
+import { createHeadingOutline } from './headingOutline';
 
 /**
  * Create a configured Marked instance with syntax highlighting and custom image renderer
  * @param contentDir - The content directory for processing images
  * @param sectionType - The section type for organizing images
+ * @param headings - Heading outline collector; read its outline() after parsing
  * @returns Configured Marked instance
  */
-export function createMarkedWithHighlight(contentDir: string, sectionType: string): Marked {
+export function createMarkedWithHighlight(
+    contentDir: string,
+    sectionType: string,
+    headings = createHeadingOutline()
+): Marked {
     // Custom renderer for images
     const renderer = {
         image(token: { href: string; title: string | null; text: string }) {
@@ -41,7 +47,7 @@ export function createMarkedWithHighlight(contentDir: string, sectionType: strin
         })
     );
 
-    marked.use({ renderer });
+    marked.use({ renderer }, headings.extension);
     
     return marked;
 } 

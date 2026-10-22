@@ -8,6 +8,10 @@
     const { portfolioData, content } = data;
 </script>
 
+<svelte:head>
+    <title>{portfolioData.settings.name} - {portfolioData.settings.title}</title>
+</svelte:head>
+
 <div class="page-container">
     <About {portfolioData} />
     <DisplaySections {portfolioData} {content} />

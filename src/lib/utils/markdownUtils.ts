@@ -1,7 +1,6 @@
 import { marked } from 'marked';
-import matter from 'gray-matter';
-import { basename, join } from 'path';
-import { readFileSync, readdirSync } from 'fs';
+import { join } from 'path';
+import { readContentFolder } from './contentEntries.js';
 import { processImagePath } from './imageUtils';
 import { sortByOrderAndDate } from './dateSortUtils';
 import type { MarkdownContent } from '$lib/types/types';
@@ -28,11 +27,8 @@ export function loadMarkdownFiles(directory: string): MarkdownContent[] {
         // Extract section type from path for image processing
         const sectionType = pathWithSrc.split('/').pop() || 'default';
         
-        const files = readdirSync(fullPath).filter(file => file.endsWith('.md'));
-        const content = files.map(file => {
-            const raw = readFileSync(join(fullPath, file), 'utf-8');
-            const slug = basename(file, '.md');
-            const { data: metadata, content: markdown } = matter(raw);
+        const { entries } = readContentFolder(process.cwd(), pathWithSrc);
+        const content = entries.map(({ slug, metadata, markdown }) => {
             const html = marked.parse(markdown) as string;
             
             // Safely process image with error handling
@@ -47,20 +43,7 @@ export function loadMarkdownFiles(directory: string): MarkdownContent[] {
                 }
             }
             
-            return {
-                slug,
-                metadata: {
-                    title: metadata.title ?? 'Untitled',
-                    date: metadata.date || '',
-                    link: metadata.link || '',
-                    tags: Array.isArray(metadata.tags) ? metadata.tags : metadata.tags?.split(',').map((t: string) => t.trim()) || [],
-                    description: metadata.description || '',
-                    skip: metadata.skip || false,
-                    display_order: typeof metadata.display_order === 'number' ? metadata.display_order : Infinity,
-                    image: processedImage
-                },
-                html
-            };
+            return { slug, metadata: { ...metadata, image: processedImage }, html };
         });
         
         // Sort by order and date
@@ -68,6 +51,8 @@ export function loadMarkdownFiles(directory: string): MarkdownContent[] {
         
         return content;
     } catch (e) {
+        // The config validator already names missing folders and their JSON locations.
+        if (e && typeof e === 'object' && 'code' in e && 'syscall' in e && e.syscall === 'scandir' && ['ENOENT', 'ENOTDIR'].includes(String(e.code))) return [];
         console.warn(`Warning: Could not load files from directory ${directory}:`, e);
         return [];
     }
@@ -90,4 +75,4 @@ export function getTagsByFrequency(items: Array<{ metadata: { tags?: string[] | 
     return Object.entries(tagFrequency)
         .sort(([,a], [,b]) => b - a)
         .map(([tag]) => tag);
-} 
+}

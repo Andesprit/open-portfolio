@@ -1,15 +1,18 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { theme, themeLoading } from '$lib/stores/themeStore';
+	import { theme } from '$lib/stores/themeStore';
+	import { page } from '$app/stores';
 	import type { LayoutData } from './$types';
 	import '../styles/global.css';
 	import Navbar from '../lib/components/NavBar.svelte';
 	import Footer from '../lib/components/Footer.svelte';
 	export let data: LayoutData;
+	$: portfolioData = data.portfolioData;
+	$: isErrorPage = Boolean($page.error) || $page.route.id === '/404';
 
 	onMount(() => {
 		// Theme is already applied by blocking script, just sync the store
-		theme.init(data.portfolioData.settings?.theme || 'light');
+		theme.init(portfolioData.settings?.theme || 'light');
 
 		const handleHashChange = () => {
 			const hash = window.location.hash;
@@ -22,7 +25,13 @@
 
 			if (hash && !isDetailPage) {
 				requestAnimationFrame(() => {
-					const element = document.querySelector(hash);
+					// Ids such as Unicode heading slugs arrive percent-encoded and are not valid selectors.
+					let element: HTMLElement | null = null;
+					try {
+						element = document.getElementById(decodeURIComponent(hash.slice(1)));
+					} catch {
+						return;
+					}
 					if (element) {
 						element.scrollIntoView({ behavior: 'smooth' });
 					}
@@ -41,15 +50,19 @@
 
 <svelte:head>
 	<!-- Pass portfolio theme to the blocking script -->
-	<meta name="portfolio-theme" content={data.portfolioData.settings?.theme || 'light'} />
+	<meta name="portfolio-theme" content={portfolioData.settings?.theme || 'light'} />
 </svelte:head>
 
-<!-- Show content only after theme is properly initialized -->
-{#if !$themeLoading}
-	<Navbar portfolioData={data.portfolioData} />
-	<slot />
-	<Footer portfolioData={data.portfolioData} />
-{:else}
-	<!-- Optional: minimal loading state -->
-	<div class="theme-loading-spinner"></div>
+{#if import.meta.env.DEV}
+	{#await import('$lib/components/ConfigNotice.svelte') then { default: ConfigNotice }}
+		<ConfigNotice warnings={data?.configWarnings || []} />
+	{/await}
+{/if}
+
+{#if !isErrorPage}
+	<Navbar {portfolioData} />
+{/if}
+<slot />
+{#if !isErrorPage}
+	<Footer {portfolioData} />
 {/if}

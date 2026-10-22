@@ -5,6 +5,7 @@
 	export let truncationLimit: number = 150;
 
 	import { fadeIn } from '$lib/utils/fadeInUtils';
+	import { followCardTarget } from '$lib/utils/cardTarget';
 	import Pagination from '$lib/components/common/Pagination.svelte';
 	import TruncatedMarkdown from '$lib/components/common/TruncatedMarkdown.svelte';
 
@@ -23,10 +24,10 @@
 	}
 </script>
 
-<section id={sectionTitle.toLowerCase()} class="section" use:fadeIn>
+<section id={sectionTitle.toLowerCase().replace(/\s+/g, '-')} class="section" use:fadeIn use:followCardTarget={{ ids: items.map(item => item.searchId), itemsPerPage, selectPage: handlePageChange }}>
 	<h2 class="section-title">{sectionTitle}</h2>
 	{#each paginatedItems as item, index (`${item.title || 'untitled'}-${index}`)}
-		<div class="timeline-content">
+		<div class="timeline-content" id={item.searchId} tabindex="-1" data-search-card>
 			<div class="details">
 				<span class="date">{item.date}</span>
 				{#if item?.icon}

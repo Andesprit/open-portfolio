@@ -3,7 +3,10 @@
 	import { base } from '$app/paths';
 	import type { PortfolioData } from '../types/types';
 	import ThemeSwitcher from './common/ThemeSwitcher.svelte';
+	import SearchDialog from './SearchDialog.svelte';
 	export let portfolioData: PortfolioData;
+	$: ownerName = typeof portfolioData.settings.name === 'string' && portfolioData.settings.name.trim()
+		? portfolioData.settings.name : 'Portfolio';
 
 	let isOpen: boolean = false;
 	let navElement: HTMLElement | undefined;
@@ -18,6 +21,14 @@
 		if (e) {
 			const targetElement = e.currentTarget as HTMLAnchorElement;
 			const href = targetElement.getAttribute('href');
+
+			// Contact lives in the footer of every page, so stay on the current page
+			if (href === '#contact') {
+				e.preventDefault();
+				// Focusing scrolls instantly; a smooth scroll past a long article takes seconds
+				document.getElementById('contact')?.focus();
+				return;
+			}
 
 			// Only prevent default and scroll if it's an internal hash link
 			if (href && href.startsWith('#')) {
@@ -42,6 +53,8 @@
 		}
 	};
 
+	$: hasContact = portfolioData.social.some((social) => social.link?.trim());
+
 	// Function to convert section title to anchor link
 	const titleToAnchor = (title: string): string => {
 		return title.toLowerCase().replace(/\s+/g, '-');
@@ -50,7 +63,7 @@
 	// Generate dynamic navigation links
 	$: navLinks = [
 		{ title: 'About', href: `${base}/#about` },
-		...portfolioData.sections.map((section) => ({
+		...portfolioData.sections.filter((section) => typeof section.title === 'string' && section.title.trim()).map((section) => ({
 			title: section.title,
 			href: `${base}/#${titleToAnchor(section.title)}`
 		})),
@@ -81,10 +94,11 @@
 		<div class="nav-left">
 			<a href="{base}/" class="home-link" on:click={closeMenu}>
 				<div class="logo">
-					<span class="initial">{portfolioData.settings.name[0].toUpperCase()}</span>
+					<span class="initial">{ownerName[0].toUpperCase()}</span>
 				</div>
-				<h1 class="name">{portfolioData.settings.name.toUpperCase()}</h1>
+				<h1 class="name">{ownerName.toUpperCase()}</h1>
 			</a>
+			<SearchDialog onOpen={() => (isOpen = false)} />
 		</div>
 
 		<button
@@ -103,6 +117,9 @@
 				{#each navLinks as link}
 					<li><a href={link.href} on:click={closeMenu}>{link.title}</a></li>
 				{/each}
+				{#if hasContact}
+					<li><a href="#contact" on:click={closeMenu}>Contact</a></li>
+				{/if}
 				<li><ThemeSwitcher /></li>
 			</ul>
 		</div>
@@ -138,9 +155,12 @@
 	.nav-left {
 		display: flex;
 		align-items: center;
+		min-width: 0;
+		gap: 8px;
 	}
 
 	.home-link {
+		min-width: 0;
 		display: flex;
 		align-items: center;
 		gap: 12px;
@@ -158,6 +178,7 @@
 	}
 
 	.logo {
+		flex-shrink: 0;
 		width: 35px;
 		height: 35px;
 		padding: 3px;
@@ -182,7 +203,11 @@
 	}
 
 	.name {
-		flex-shrink: 0;
+		min-width: 0;
+		flex-shrink: 1;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 		font-size: 1.5rem;
 		font-weight: 700;
 		background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
@@ -260,6 +285,8 @@
 
 	@media (max-width: 1400px) {
 		nav {
+			box-sizing: border-box;
+			width: 100%;
 			max-width: 100%;
 			min-width: 100%;
 			padding: 15px;
@@ -267,6 +294,15 @@
 
 		.burger {
 			display: flex;
+		}
+
+		.burger div {
+			margin-right: 0;
+		}
+
+		.nav-left {
+			flex: 1;
+			margin-right: 8px;
 		}
 
 		.nav-right {

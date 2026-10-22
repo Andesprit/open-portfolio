@@ -2,6 +2,51 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import fs from 'fs';
 import path from 'path';
+import { readPortfolioWarnings } from './src/lib/server/portfolioValidation.js';
+
+function validatePortfolioConfig() {
+    let root = process.cwd();
+    let hadWarnings = false;
+    function report(warnings: string[]) {
+        if (warnings.length) {
+            fs.writeSync(2, `\nPortfolio content: ${warnings.length} warning(s), each starting with the file to edit (build continues):\n${warnings.map(warning => `  - ${warning}`).join('\n')}\n\n`);
+        } else if (hadWarnings) {
+            fs.writeSync(2, 'Portfolio content: all warnings cleared.\n');
+        }
+        hadWarnings = warnings.length > 0;
+    }
+    // Content Markdown lives under src/ (any configured section path); it is read with fs, not imported.
+    const isContent = (file: string) => file === path.join(root, 'src/content/data/portfolio-data.yaml') ||
+        (file.startsWith(path.join(root, 'src') + path.sep) && file.endsWith('.md'));
+    return {
+        name: 'validate-portfolio-config',
+        configResolved(config: import('vite').ResolvedConfig) {
+            // SvelteKit starts a second build for SSR; report only once at startup.
+            if (config.build.ssr) return;
+            root = config.root;
+            report(readPortfolioWarnings(root));
+        },
+        configureServer(server: import('vite').ViteDevServer) {
+            // handleHotUpdate only runs for edits; new, deleted and renamed files arrive here.
+            for (const event of ['add', 'unlink']) {
+                server.watcher.on(event, (file: string) => {
+                    if (!isContent(file)) return;
+                    report(readPortfolioWarnings(root));
+                    server.ws.send({ type: 'full-reload' });
+                });
+            }
+        },
+        async handleHotUpdate(context: import('vite').HmrContext) {
+            if (!isContent(context.file)) return;
+            // Vite waits for editors to finish writing before returning the new content.
+            await context.read();
+            report(readPortfolioWarnings(root));
+            for (const module of context.modules) context.server.moduleGraph.invalidateModule(module);
+            context.server.ws.send({ type: 'full-reload' });
+            return [];
+        }
+    };
+}
 
 // Plugin to copy content images to static folder during build
 function copyContentImages() {
@@ -48,7 +93,7 @@ function copyContentImages() {
 }
 
 export default defineConfig({
-    plugins: [copyContentImages(), sveltekit()],
+    plugins: [copyContentImages(), validatePortfolioConfig(), sveltekit()],
     resolve: {
         alias: {
             

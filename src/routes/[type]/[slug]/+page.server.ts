@@ -1,13 +1,13 @@
-import { error } from '@sveltejs/kit';
-import matter from 'gray-matter';
+import { error, isHttpError } from '@sveltejs/kit';
 import { join } from 'path';
-import { readFileSync } from 'fs';
 import type { PageServerLoad, EntryGenerator } from './$types';
 import type { ContentItem, PortfolioSection } from '$lib/types/types';
 import { generateRoutes, findSectionByType } from '$lib/utils/routeUtils';
 import { createMarkedWithHighlight } from '$lib/utils/markdownHighlightUtils';
+import { createHeadingOutline } from '$lib/utils/headingOutline';
 import { loadNavigationItems, findNextItem } from '$lib/utils/navigationUtils';
 import { processImagePath } from '$lib/utils/imageUtils';
+import { readContentEntry } from '$lib/utils/contentEntries.js';
 import { loadPortfolioData } from '$lib/server/portfolioData.js';
 
 // Read portfolio data for route generation
@@ -44,11 +44,11 @@ export const load: PageServerLoad = async ({ params }) => {
             : `src/${normalizedPath}`;
 
         const contentDir = join(process.cwd(), pathWithSrc);
-        const fullPath = join(contentDir, `${slug}.md`);
 
-        // Read and parse the markdown file
-        const raw = readFileSync(fullPath, 'utf-8');
-        const { data: metadata, content: markdown } = matter(raw);
+        // Read and parse the markdown file; unreadable frontmatter gets no page
+        const entry = readContentEntry(process.cwd(), pathWithSrc, `${slug}.md`);
+        if (!entry.metadata) throw error(404, `Content "${slug}" has unreadable frontmatter`);
+        const { metadata, markdown } = entry;
 
         // Get all navigation items for this content type
         const navigationItems = loadNavigationItems(contentDir);
@@ -60,7 +60,8 @@ export const load: PageServerLoad = async ({ params }) => {
         const sectionType = pathWithSrc.split('/').pop() || 'default';
 
         // Setup marked with syntax highlighting and custom renderer
-        const marked = createMarkedWithHighlight(contentDir, sectionType);
+        const headings = createHeadingOutline();
+        const marked = createMarkedWithHighlight(contentDir, sectionType, headings);
         const html = await marked.parse(markdown);
         
         // Safely process image with error handling
@@ -79,22 +80,18 @@ export const load: PageServerLoad = async ({ params }) => {
         return {
             slug,
             type,
-            metadata: {
-                title: metadata.title ?? 'Untitled',
-                date: metadata.date || '',
-                link: metadata.link || '',
-                tags: Array.isArray(metadata.tags) ? metadata.tags : metadata.tags?.split(',').map((t: string) => t.trim()) || [],
-                description: metadata.description || '',
-                skip: metadata.skip || false,
-                display_order: typeof metadata.display_order === 'number' ? metadata.display_order : Infinity,
-                image: processedImage
-            },
+            metadata: { ...metadata, image: processedImage },
             html,
+            outline: headings.outline(),
             nextItem
         } satisfies ContentItem;
 
     } catch (e) {
-        console.error(`Error loading content for type "${params.type}" and slug "${params.slug}":`, e);
+        const missingFile = e && typeof e === 'object' && 'code' in e && e.code === 'ENOENT';
+        // Expected missing routes/assets are reported by prerender, without a second stack trace.
+        if (!isHttpError(e, 404) && !missingFile) {
+            console.error(`Error loading content for type "${params.type}" and slug "${params.slug}":`, e);
+        }
         throw error(404, `Content "${params.slug}" not found in ${params.type}. Details: `);
     }
 };

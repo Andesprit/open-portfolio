@@ -1,12 +1,18 @@
 <script lang="ts">
-	import type { ContentItem } from '$lib/types/types';
+	import type { PageData } from './$types';
 	import { base } from '$app/paths';
 	import '/src/styles/slug-page.css';
+	import { codeCopy } from '$lib/utils/codeCopy';
 
-	export let data: ContentItem;
+	export let data: PageData;
+	$: outlineLinks = data.outline.reduce((count, entry) => count + 1 + entry.children.length, 0);
+	$: sectionTitle = data.portfolioData.sections.find(
+		(section) => typeof section.title === 'string' && section.title.toLowerCase().replace(/\s+/g, '-') === data.type
+	)?.title || data.type;
 </script>
 
 <svelte:head>
+	<title>{data.metadata.title} | {data.portfolioData.settings.name}</title>
 	<link
 		rel="stylesheet"
 		href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.11.1/styles/atom-one-dark.min.css"
@@ -15,21 +21,43 @@
 
 <div class="slug-page-container">
 	<article class="slug-article">
+		<a class="back-link" href="{base}/#{data.type}">← Back to {sectionTitle}</a>
 		<header>
 			<h1>{data.metadata.title}</h1>
 			<div class="metadata">
 				<time datetime={data.metadata.date}>{data.metadata.date}</time>
 				<div class="tags">
-					{#each Array.isArray(data.metadata.tags) ? data.metadata.tags : data.metadata.tags
-								.split(',')
-								.map((tag: string) => tag.trim()) as tag}
+					{#each data.metadata.tags as tag}
 						<span class="tag">{tag}</span>
 					{/each}
 				</div>
 			</div>
 		</header>
-		<img src={data.metadata.image} alt={data.metadata.image} />
-		<div class="content">
+		{#if outlineLinks > 1}
+			<details class="article-outline">
+				<summary>On this page <span class="outline-count">({outlineLinks} sections)</span></summary>
+				<nav aria-label="On this page">
+					<ol>
+						{#each data.outline as entry}
+							<li>
+								<a href="#{entry.id}">{entry.text}</a>
+								{#if entry.children.length}
+									<ol>
+										{#each entry.children as child}
+											<li><a href="#{child.id}">{child.text}</a></li>
+										{/each}
+									</ol>
+								{/if}
+							</li>
+						{/each}
+					</ol>
+				</nav>
+			</details>
+		{/if}
+		{#if data.metadata.image}
+			<img src={data.metadata.image} alt={data.metadata.title} />
+		{/if}
+		<div class="content" use:codeCopy={data.html}>
 			{@html data.html}
 		</div>
 		{#if data.nextItem}
@@ -42,3 +70,11 @@
 		{/if}
 	</article>
 </div>
+
+<style>
+	.back-link {
+		display: inline-block;
+		margin-bottom: 1rem;
+		text-decoration: underline;
+	}
+</style>
