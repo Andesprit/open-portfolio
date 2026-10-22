@@ -133,6 +133,8 @@
 
 	.footer-section:nth-child(3) {
 		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
 		justify-content: flex-end;
 	}
 

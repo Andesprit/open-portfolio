@@ -3,6 +3,7 @@ import { copyText } from './contactUtils';
 // Svelte action: adds a Copy code button above each <pre><code> block in an article.
 // Pass the article html so the buttons are rebuilt when the article changes.
 export function codeCopy(node: HTMLElement, _html?: string) {
+	let latest = 0;
 	const add = () => {
 		for (const pre of node.querySelectorAll('pre')) {
 			const code = pre.querySelector('code');
@@ -18,8 +19,11 @@ export function codeCopy(node: HTMLElement, _html?: string) {
 			status.setAttribute('role', 'status');
 			button.addEventListener('click', async () => {
 				// Clear every block's status so only the latest action reports a result.
+				const click = ++latest;
 				node.querySelectorAll('.code-copy-status').forEach((other) => (other.textContent = ''));
-				status.textContent = (await copyText(code.textContent ?? ''))
+				const copied = await copyText(code.textContent ?? '');
+				if (click !== latest) return;
+				status.textContent = copied
 					? 'Copied'
 					: 'Copy failed. Select the code below and copy it by hand.';
 			});

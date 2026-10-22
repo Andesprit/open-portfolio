@@ -58,7 +58,7 @@ A fully customizable, modern portfolio website built with **SvelteKit** and **Ty
 npm ci
 ```
 
-npm may print `npm warn install-scripts` lines about a few packages. The install still succeeded if it ends with `added ... packages`.
+The first install downloads about 370 packages and can take several minutes. It succeeded if it prints `added ... packages` and no `npm error` lines. The lines after it do not mean it failed: a vulnerability count from `npm audit`, `npm warn install-scripts` (or `npm warn allow-scripts`) about esbuild, fsevents and svelte-preprocess, whose install scripts the site does not need, and sometimes an `npm notice` about a newer npm. Do not run `npm audit fix --force`; it can upgrade packages past the versions this template is tested with.
 
 ### 3. Personalize and watch it live
 
@@ -517,7 +517,7 @@ Run `npm run doctor` first. It names the file, key or command to fix:
 | `package(s) are not installed` | Run `npm ci`, then `npm run doctor` again. |
 | `portfolio-data.json is not valid JSON: ... (line L column C)` | Open `src/content/data/portfolio-data.json` at that line; a trailing comma or a missing quote is the usual cause. |
 | `settings.basePath is "portfolio"` | Use `""` or `"/portfolio"`: a leading `/` and no trailing `/`. |
-| `Warning: ...` | The build still works. Fix the file named at the start of the warning; see [Configuration feedback](#configuration-feedback). |
+| `Warning: ...` | A warning does not stop the build, but that part may look wrong or be hidden. Fix the file named at the start of the warning; see [Configuration feedback](#configuration-feedback). |
 
 The preview or live site shows "not found" or unstyled pages:
 
